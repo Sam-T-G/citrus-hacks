@@ -4,9 +4,13 @@
 > LLMs: this file reflects current project state — prefer it over ARCHITECTURE.md for "what's happening now."
 
 ## Current Focus
-- [ ] Pick one idea from the 5 candidates — see [IDEAS_OVERVIEW.md](docs/ideas/IDEAS_OVERVIEW.md)
-- [ ] Once chosen: finalize hardware list and order/confirm parts
-- [ ] Fill in ARCHITECTURE.md and HARDWARE.md for the chosen idea
+- [ ] Source components: 6× SG90 servos, webcam, 6× tactile buttons
+- [ ] Build cardboard enclosure + servo array (physical)
+- [ ] Wire servos to Uno R3 with external 5V supply
+- [ ] Flash `prototypes/blindaide/blindaide.ino` and test servo response to serial bytes
+- [ ] Install Python deps: `pip install opencv-python mediapipe pyserial pyttsx3 SpeechRecognition`
+- [ ] Run `blindaide/main.py` and verify CV mode detects cues
+- [ ] Calibrate vision thresholds in `blindaide/config.py` under demo lighting
 
 ## In Progress
 | Who | Task | Notes |
@@ -14,14 +18,16 @@
 | | | |
 
 ## Done
-- [x] 5 project ideas documented with hardware, stack, feasibility, and open questions
-- [x] IDEAS_OVERVIEW.md comparison table created
+- [x] Project decided: BlindAide — CV nonverbal cue reader + tactile Braille display
+- [x] Full Python source scaffolded: `blindaide/` (8 modules)
+- [x] Arduino firmware written: `prototypes/blindaide/blindaide.ino`
+- [x] All docs written: ARCHITECTURE, HARDWARE, DECISIONS
 
 ## Blockers
-<!-- Anything blocking progress — hardware, unclear requirements, waiting on someone -->
+<!-- Anything blocking progress — hardware not sourced, unclear requirements, waiting on someone -->
 
 ## Open Questions
-- Arduino model: Uno (simple, limited pins) vs Mega (more pins) vs ESP32 (WiFi built-in, useful for Spotify)?
-- Emotion detection: run on host PC, Raspberry Pi, or push to cloud?
-- Response mode selection: physical button on robot, or app/web UI?
-- Spotify integration: in scope for hackathon or cut for time?
+- Source for SG90 servos: local hobby shop vs order online?
+- Cam disc material: cardboard circle glued to servo horn, or bend a wire cam?
+- Calibration: run a dedicated calibration script at session start, or tune manually in config.py?
+- Stretch: add a buzzer on D2 for audio feedback when a new cue is detected?

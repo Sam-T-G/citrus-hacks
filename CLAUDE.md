@@ -1,45 +1,47 @@
-# Project: Mood Robot
+# Project: BlindAide
 
 > LLM entry point. Read this first. Follow links for depth.
 
 ## What This Is
-A physical robot that senses your mood and stress levels via camera (computer vision / facial expression analysis), then responds with comforting words, motivational messages, jokes, or shit-talk depending on your preference. Controls ambient LED lighting around the house and optionally curates playlists to match or shift your mood. Targets anyone who wants an emotionally-reactive environment at home.
+A portable assistive device for blind users that (1) reads human nonverbal social cues via camera + MediaPipe computer vision and (2) renders text tactilely through a refreshable single-cell Braille pin display driven by 6 SG90 servo motors. Built with an Arduino Uno R3, cardboard enclosure, and breadboard components. Python runs on a companion laptop connected via USB serial.
 
 ## Stack
 | Layer | Tech |
 |-------|------|
-| Firmware | Arduino (C++) |
-| Vision/AI | Python (OpenCV + emotion detection model, Claude API for response generation) |
-| Backend | Python (FastAPI or similar) |
-| Frontend | LED screen on robot body (TBD) |
-| Comms | Serial (Arduino ↔ Python) |
-| DB | None (stateless, or lightweight SQLite for mood history) |
+| Firmware | Arduino C++ (`Servo.h`) |
+| Vision | Python — OpenCV + MediaPipe FaceMesh + Hands |
+| Serial bridge | Python — `pyserial` |
+| Braille encoding | Python — custom Grade 1 lookup table |
+| TTS fallback | Python — `pyttsx3` |
+| Voice input | Python — `SpeechRecognition` |
 
 ## Repo Layout
 ```
-prototypes/     # hardware sketches and proof-of-concept code
-docs/           # architecture, hardware spec, decision log
-STATUS.md       # current sprint — read this for live context
+blindaide/          # Python host software (runs on laptop)
+  main.py           # entry point — mode switching, event loop
+  vision.py         # camera capture + MediaPipe cue analysis
+  context_engine.py # cue classification + debounce
+  braille.py        # text ↔ 6-bit braille cell encoding
+  serial_bridge.py  # serial connection to Arduino
+  chord_input.py    # maps chord bytes → characters
+  audio.py          # TTS + voice input
+  config.py         # thresholds, serial port, constants
+prototypes/
+  blindaide/
+    blindaide.ino   # Arduino Uno R3 firmware
+docs/               # architecture, hardware spec, decision log
+STATUS.md           # current sprint — read this for live context
 ```
 
 ## Key Docs (read in order if catching up)
-1. [Ideas Overview](docs/ideas/IDEAS_OVERVIEW.md) — all candidate ideas with feasibility comparison
-2. [Architecture](docs/ARCHITECTURE.md) — system design for chosen idea (TBD)
-3. [Hardware](docs/HARDWARE.md) — Arduino pinouts, sensors, wiring notes
-4. [Decisions](docs/DECISIONS.md) — why we chose X over Y
-5. [Status](STATUS.md) — what's being worked on right now
-
-## Ideas (under consideration)
-| Idea | File |
-|------|------|
-| Mood Robot | [docs/ideas/mood_robot.md](docs/ideas/mood_robot.md) |
-| RFID Shield Network | [docs/ideas/rfid_shield.md](docs/ideas/rfid_shield.md) |
-| Braille Printer | [docs/ideas/braille_printer.md](docs/ideas/braille_printer.md) |
-| Smart Medication Assistant | [docs/ideas/smart_pillbox.md](docs/ideas/smart_pillbox.md) |
-| Sleep AI | [docs/ideas/sleep_ai.md](docs/ideas/sleep_ai.md) |
+1. [Architecture](docs/ARCHITECTURE.md) — system design, data flow, component boundaries
+2. [Hardware](docs/HARDWARE.md) — Arduino pinouts, wiring, physical build
+3. [Decisions](docs/DECISIONS.md) — why we chose X over Y
+4. [Status](STATUS.md) — what's being worked on right now
 
 ## Conventions
-- **Firmware**: one `.ino` per prototype in `prototypes/<feature>/`
+- **Firmware**: `prototypes/blindaide/blindaide.ino` is the single production sketch
+- **Python**: all source lives in `blindaide/`; import from sibling modules directly
 - **Status updates**: edit `STATUS.md` when you start/finish a task or hit a blocker
 - **Decisions**: log any non-obvious technical choice in `docs/DECISIONS.md`
-- **Interfaces**: if two components talk to each other, document the contract in `docs/ARCHITECTURE.md`
+- **Calibration**: vision thresholds live in `blindaide/config.py` — tune per session
