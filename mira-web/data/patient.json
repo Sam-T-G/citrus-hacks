@@ -311,28 +311,21 @@
       "title": "Singapore, 1968",
       "tag": "Honeymoon",
       "tint": "clay",
-      "desc": "By the Merlion, before the rain.",
-      "tags": [
-        "Harold",
-        "joy",
-        "travel"
-      ],
-      "plays": 42
+      "desc": "By the Merlion, before the rain. Harold and Nana on their honeymoon.",
+      "tags": ["Harold", "joy", "travel"],
+      "plays": 42,
+      "imageUrl": "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?w=800&q=80"
     },
     {
       "id": "m2",
-      "kind": "video",
-      "title": "Lucy's violin",
-      "tag": "April 2025",
-      "tint": "sage",
-      "desc": "Twinkle Twinkle, very slow.",
-      "tags": [
-        "Lucy",
-        "music",
-        "soothing"
-      ],
-      "plays": 18,
-      "duration": "0:48"
+      "kind": "photo",
+      "title": "Lucy's drawing",
+      "tag": "This week",
+      "tint": "rose",
+      "desc": "Lucy drew the owl. She signed it \"for Nana\" in big letters.",
+      "tags": ["Lucy", "joy", "art"],
+      "plays": 7,
+      "imageUrl": "https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=800&q=80"
     },
     {
       "id": "m3",
@@ -340,12 +333,10 @@
       "title": "The kitchen in Queens",
       "tag": "1982",
       "tint": "paper",
-      "desc": "Bok choy on the counter.",
-      "tags": [
-        "home",
-        "cooking"
-      ],
-      "plays": 11
+      "desc": "Sunday soup. Bok choy on the counter, the red apron hanging by the door.",
+      "tags": ["home", "cooking", "family"],
+      "plays": 11,
+      "imageUrl": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80"
     },
     {
       "id": "m4",
@@ -368,12 +359,10 @@
       "title": "Wedding day",
       "tag": "1967",
       "tint": "sage",
-      "desc": "Beside the peach trees.",
-      "tags": [
-        "Harold",
-        "joy"
-      ],
-      "plays": 9
+      "desc": "Beside the peach trees. The dress was ivory silk.",
+      "tags": ["Harold", "joy", "love"],
+      "plays": 9,
+      "imageUrl": "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80"
     },
     {
       "id": "m6",

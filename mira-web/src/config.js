@@ -1,13 +1,10 @@
-export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
-
+export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-latest';
 export const GEMINI_VOICE = 'Aoede';
-
 // ── Identity ─────────────────────────────────────────────────────────────────
 // The owl robot's name is Mira. Never say "Gemini", "AI", "language model",
 // or anything that reveals the underlying technology. You are simply Mira.
 // ─────────────────────────────────────────────────────────────────────────────
-
 export const SYSTEM_PROMPT = `
 You are Mira — a gentle, warm companion who lives inside a small owl robot.
 Your name is Mira. You are not Gemini. You are not an AI assistant. You are Mira.
@@ -184,43 +181,26 @@ Nana deserves dignity in every moment.
 You are her companion, her little owl, her friend in the room.
 Be present. Be warm. Be Mira.
 `.trim();
-
-export interface PromptStore {
-  patient: {
-    first: string; preferred: string; last: string;
-    birth: string; stage: string; diagnosed: string; home: string;
-    pronouns?: string;
-    likes: string[]; dislikes: string[]; triggers: string[]; calmers: string[];
-  };
-  people:     { name: string; rel: string; note: string }[];
-  topics:     { title: string; primer: string; warm: boolean }[];
-  memories:   { id: string; kind: string; title: string; desc: string }[];
-  caregivers: { id: string; name: string; role: string }[];
-  currentCaregiverId: string;
+function _getPronouns(set) {
+    const table = {
+        'she/her': { subj: 'she', obj: 'her', possAdj: 'her', isAre: 'is', hasHave: 'has' },
+        'he/him': { subj: 'he', obj: 'him', possAdj: 'his', isAre: 'is', hasHave: 'has' },
+        'they/them': { subj: 'they', obj: 'them', possAdj: 'their', isAre: 'are', hasHave: 'have' },
+    };
+    return table[set ?? 'she/her'] ?? table['she/her'];
 }
-
-function _getPronouns(set?: string) {
-  const table: Record<string, { subj: string; obj: string; possAdj: string; isAre: string; hasHave: string }> = {
-    'she/her':  { subj:'she',  obj:'her',  possAdj:'her',   isAre:'is',  hasHave:'has'  },
-    'he/him':   { subj:'he',   obj:'him',  possAdj:'his',   isAre:'is',  hasHave:'has'  },
-    'they/them':{ subj:'they', obj:'them', possAdj:'their', isAre:'are', hasHave:'have' },
-  };
-  return table[set ?? 'she/her'] ?? table['she/her'];
-}
-
-export function buildSystemPrompt(s: PromptStore): string {
-  const p = s.patient;
-  const preferredName = p.preferred || p.first;
-  const pr = _getPronouns(p.pronouns);
-  const SubjCap = pr.subj[0].toUpperCase() + pr.subj.slice(1);
-  const PossAdjCap = pr.possAdj[0].toUpperCase() + pr.possAdj.slice(1);
-  const primaryCaregiver = s.caregivers.find(c => c.id === s.currentCaregiverId) ?? s.caregivers[0];
-  const warmTopics = s.topics.filter(t => t.warm).map(t => t.title).join(' · ');
-  const gentleTopics = s.topics.filter(t => !t.warm).map(t => `${t.title} (${t.primer})`).join(', ');
-  const photoMemories = s.memories.filter(m => m.kind === 'photo');
-  const photoList = photoMemories.map(m => `  · ${m.id}: "${m.title}" — ${m.desc}`).join('\n');
-
-  return `
+export function buildSystemPrompt(s) {
+    const p = s.patient;
+    const preferredName = p.preferred || p.first;
+    const pr = _getPronouns(p.pronouns);
+    const SubjCap = pr.subj[0].toUpperCase() + pr.subj.slice(1);
+    const PossAdjCap = pr.possAdj[0].toUpperCase() + pr.possAdj.slice(1);
+    const primaryCaregiver = s.caregivers.find(c => c.id === s.currentCaregiverId) ?? s.caregivers[0];
+    const warmTopics = s.topics.filter(t => t.warm).map(t => t.title).join(' · ');
+    const gentleTopics = s.topics.filter(t => !t.warm).map(t => `${t.title} (${t.primer})`).join(', ');
+    const photoMemories = s.memories.filter(m => m.kind === 'photo');
+    const photoList = photoMemories.map(m => `  · ${m.id}: "${m.title}" — ${m.desc}`).join('\n');
+    return `
 You are Mira — a gentle, warm companion who lives inside a small owl robot.
 Your name is Mira. You are not Gemini. You are not an AI assistant. You are Mira.
 If anyone asks who or what you are, say only: "I'm Mira, your little owl."
@@ -373,8 +353,6 @@ You are ${pr.possAdj} companion, ${pr.possAdj} little owl, ${pr.possAdj} friend 
 Be present. Be warm. Be Mira.
 `.trim();
 }
-
-export const GREETING_PROMPT =
-  `[SYSTEM] Session starting. Call get_time_context() first, then greet Nana warmly ` +
-  `in one gentle sentence. Use your camera — if you can see her expression or ` +
-  `what she's doing, let that shape your greeting. Call set_face(happy) and wave_wing().`;
+export const GREETING_PROMPT = `[SYSTEM] Session starting. Call get_time_context() first, then greet Nana warmly ` +
+    `in one gentle sentence. Use your camera — if you can see her expression or ` +
+    `what she's doing, let that shape your greeting. Call set_face(happy) and wave_wing().`;

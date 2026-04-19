@@ -21,6 +21,7 @@ export interface Topic {
 export interface Memory {
   id: string; kind: string; title: string; tag: string; tint: string;
   desc: string; tags: string[]; plays: number; duration?: string;
+  imageUrl?: string;
 }
 export interface Voice {
   id: string; person: string; title: string; duration: string; usedIn: string; waves: number[];

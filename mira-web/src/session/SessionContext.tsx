@@ -27,6 +27,7 @@ interface SessionState {
   errorMsg:           string | null;
   alerts:             ActiveAlert[];
   geminiObservations: GeminiObservation[];
+  displayedPhotoId:   string | null;
   sessionActive:      boolean;
   engineRef:          React.RefObject<GeminiLiveEngine | null>;
   startSession:       () => Promise<void>;
@@ -34,6 +35,8 @@ interface SessionState {
   connectSerial:      () => Promise<void>;
   connectBridge:      () => Promise<void>;
   dismissAlert:       (id: string) => void;
+  showPhoto:          (id: string) => void;
+  dismissPhoto:       () => void;
   clearError:         () => void;
 }
 
@@ -56,6 +59,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [errorMsg,     setErrorMsg]     = useState<string | null>(null);
   const [alerts,             setAlerts]             = useState<ActiveAlert[]>([]);
   const [geminiObservations, setGeminiObservations] = useState<GeminiObservation[]>([]);
+  const [displayedPhotoId,   setDisplayedPhotoId]   = useState<string | null>(null);
 
   const engineRef        = useRef<GeminiLiveEngine | null>(null);
   const routerRef        = useRef<BehaviorRouter   | null>(null);
@@ -190,6 +194,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       onVisualObservation: (obs) => {
         setGeminiObservations(prev => [...prev.slice(-29), obs]);
       },
+      onPhotoDisplay: (photoId) => {
+        setDisplayedPhotoId(photoId);
+      },
       onFacePan: (px) => {
         serialRef.current?.sendPan(px);
       },
@@ -250,9 +257,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     <SessionContext.Provider value={{
       engineState, transcript, liveUser, lastCmd, serialStatus, trackingActive, errorMsg, alerts,
       geminiObservations,
+      displayedPhotoId,
       sessionActive: engineState !== 'idle',
       engineRef,
       startSession, stopSession, connectSerial, connectBridge, dismissAlert,
+      showPhoto:    (id) => setDisplayedPhotoId(id),
+      dismissPhoto: ()   => setDisplayedPhotoId(null),
       clearError: () => setErrorMsg(null),
     }}>
       {children}

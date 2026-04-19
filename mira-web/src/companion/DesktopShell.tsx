@@ -7,6 +7,7 @@ import { ProfileEditModal } from './ProfileEditModal';
 import { CameraPreview } from '../ui/CameraPreview';
 import { LiveTranscript } from './LiveTranscript';
 import { SessionLog } from '../ui/SessionLog';
+import { PhotoOverlay } from '../ui/PhotoOverlay';
 import { logService } from '../services/LogService';
 import { notificationService } from '../services/NotificationService';
 import type { InAppNotif } from '../services/NotificationService';
@@ -142,6 +143,7 @@ function DesktopToday({ onAlert }: { onAlert: () => void }) {
   const {
     engineState, transcript, liveUser, lastCmd, serialStatus,
     sessionActive, engineRef, startSession, stopSession, connectSerial, connectBridge, errorMsg, clearError,
+    showPhoto,
   } = useSession();
   const { store, currentCaregiver } = usePatientData();
   const pr = usePronouns();
@@ -429,12 +431,16 @@ function DesktopToday({ onAlert }: { onAlert: () => void }) {
 
         <div className="c-eyebrow" style={{ marginTop: 28, marginBottom: 12 }}>Quick send</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {(store?.memories ?? []).slice(0, 4).map(m => (
-            <button key={m.id} style={{
+          {(store?.memories ?? []).filter(m => m.kind === 'photo').slice(0, 4).map(m => (
+            <button key={m.id} onClick={() => showPhoto(m.id)} style={{
               padding: 0, borderRadius: 8, overflow: 'hidden',
               border: '0.5px solid var(--hair-2)', background: 'var(--paper)', textAlign: 'left', cursor: 'pointer',
+              transition: 'box-shadow 140ms',
             }}>
-              <Placeholder h={60} tint={m.tint as 'clay' | 'sage' | 'rose' | 'paper'} label={m.kind} radius={0} />
+              {m.imageUrl
+                ? <img src={m.imageUrl} alt={m.title} style={{ width: '100%', height: 60, objectFit: 'cover', display: 'block' }} />
+                : <Placeholder h={60} tint={m.tint as 'clay' | 'sage' | 'rose' | 'paper'} label={m.kind} radius={0} />
+              }
               <div style={{ padding: '7px 9px' }}>
                 <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--ink)', lineHeight: 1.2 }}>{m.title}</div>
               </div>
@@ -1330,12 +1336,17 @@ function DesktopAlertModal({ onClose }: { onClose: () => void }) {
 export function DesktopCompanionShell() {
   const [nav, setNav] = useState<DesktopNav>('today');
   const [showAlert, setShowAlert] = useState(false);
-  const { alerts } = useSession();
+  const { alerts, displayedPhotoId, dismissPhoto } = useSession();
+  const { store } = usePatientData();
 
   // Auto-open the alert panel when a high-severity alert arrives
   useEffect(() => {
     if (alerts.some(a => a.severity === 'high')) setShowAlert(true);
   }, [alerts]);
+
+  const displayedMemory = displayedPhotoId
+    ? (store?.memories.find(m => m.id === displayedPhotoId) ?? null)
+    : null;
 
   let content: React.ReactNode;
   switch (nav) {
@@ -1352,6 +1363,7 @@ export function DesktopCompanionShell() {
       <div style={{ flex: 1, display: 'flex', minHeight: 0, position: 'relative', overflow: 'hidden' }}>
         {content}
         {showAlert && <DesktopAlertModal onClose={() => setShowAlert(false)} />}
+        {displayedMemory && <PhotoOverlay memory={displayedMemory} onDismiss={dismissPhoto} />}
       </div>
     </div>
   );

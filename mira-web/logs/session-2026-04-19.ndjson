@@ -200,3 +200,88 @@
 {"id":"1776608541718-kc03d","ts":1776608541718,"sessionId":"1776608523599-8be21","type":"behavior_event","data":{"event_type":"fall_detected","notes":"Patient appears to have fallen — on floor"}}
 {"id":"1776608541778-nvm4i","ts":1776608541778,"sessionId":"1776608523599-8be21","type":"caregiver_alert","data":{"severity":"high","reason":"Patient has fallen — immediate response needed"}}
 {"id":"1776608545752-kzwxm","ts":1776608545752,"sessionId":"1776608523599-8be21","type":"conversation_turn","data":{"role":"assistant","text":"Oh no! Sam, are you alright? I'm right here, and help is coming quickly."}}
+{"id":"1776609632831-52e6i","ts":1776609632831,"sessionId":"1776609632831-cae2j","type":"session_start","data":{}}
+{"id":"1776609640358-3qmqh","ts":1776609640358,"sessionId":"1776609632831-cae2j","type":"visual_observation","data":{"description":"Sam is scanning the room with a searching expression, then turns to look at the camera.","emotion_hint":"confused"}}
+{"id":"1776609640423-fiudz","ts":1776609640423,"sessionId":"1776609632831-cae2j","type":"mood_observation","data":{"mood":"confused","intensity":"mild"}}
+{"id":"1776609641464-gin5k","ts":1776609641464,"sessionId":"1776609632831-cae2j","type":"conversation_turn","data":{"role":"user","text":"Hey, how's it going?"}}
+{"id":"1776609644453-ht82s","ts":1776609644453,"sessionId":"1776609632831-cae2j","type":"conversation_turn","data":{"role":"assistant","text":"I'm right here, Sam. Were you looking for something?"}}
+{"id":"1776609648326-0nh34","ts":1776609648326,"sessionId":"1776609632831-cae2j","type":"caregiver_alert","data":{"severity":"high","reason":"Possible fall detected by motion sensor (confidence 66%)"}}
+{"id":"1776609650521-jhejx","ts":1776609650521,"sessionId":"1776609632831-cae2j","type":"visual_observation","data":{"description":"Patient is propped up in bed, looking calmly toward the camera, no sign of distress or fall.","emotion_hint":"calm"}}
+{"id":"1776609650593-3c42t","ts":1776609650593,"sessionId":"1776609632831-cae2j","type":"mood_observation","data":{"mood":"calm","intensity":"mild"}}
+{"id":"1776609650856-l1ukj","ts":1776609650856,"sessionId":"1776609632831-cae2j","type":"conversation_turn","data":{"role":"assistant","text":"Let me check"}}
+{"id":"1776609696002-i6z8s","ts":1776609696002,"sessionId":"1776609632831-cae2j","type":"visual_observation","data":{"description":"A person has entered the room and is standing near the bed. Sam is looking toward the person with a calm expression.","emotion_hint":"calm"}}
+{"id":"1776609698303-e2olc","ts":1776609698303,"sessionId":"1776609632831-cae2j","type":"conversation_turn","data":{"role":"assistant","text":"Hello there! Welcome to Sam's room."}}
+{"id":"1776609735299-fd0ju","ts":1776609735299,"sessionId":"1776609632831-cae2j","type":"visual_observation","data":{"description":"Person is standing near the bed, interacting with Sam. Sam remains calm.","emotion_hint":"calm"}}
+{"id":"1776609737972-ieex5","ts":1776609737972,"sessionId":"1776609632831-cae2j","type":"conversation_turn","data":{"role":"assistant","text":"It's lovely to see you.It's lovely to see you."}}
+{"id":"1776609746566-d9mva","ts":1776609746566,"sessionId":"1776609632831-cae2j","type":"session_end","data":{}}
+{"id":"1776609826681-atv2z","ts":1776609826681,"sessionId":"1776609826681-ygfzj","type":"session_start","data":{}}
+{"id":"1776609831175-425zt","ts":1776609831175,"sessionId":"1776609826681-ygfzj","type":"visual_observation","data":{"description":"Sam is scanning the room, looking left and right with an uncertain expression.","emotion_hint":"confused"}}
+{"id":"1776609831623-rc72t","ts":1776609831623,"sessionId":"1776609826681-ygfzj","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Scanning left and right, uncertain expression."}}
+{"id":"1776609837646-1hr8l","ts":1776609837646,"sessionId":"1776609826681-ygfzj","type":"conversation_turn","data":{"role":"assistant","text":"Is everything alright, Sam? Are you looking for something?"}}
+{"id":"1776609842856-amomd","ts":1776609842856,"sessionId":"1776609826681-ygfzj","type":"visual_observation","data":{"description":"Sam is propped in bed, looking towards the camera with a calm, pleasant expression. The previous confusion has resolved.","emotion_hint":"calm"}}
+{"id":"1776609843315-dft5h","ts":1776609843315,"sessionId":"1776609826681-ygfzj","type":"mood_observation","data":{"mood":"happy","intensity":"mild","notes":"Said hi, seems calm and happy now."}}
+{"id":"1776609844878-x9zxt","ts":1776609844878,"sessionId":"1776609826681-ygfzj","type":"conversation_turn","data":{"role":"user","text":"I just want to say hi."}}
+{"id":"1776609848587-zz93f","ts":1776609848587,"sessionId":"1776609826681-ygfzj","type":"conversation_turn","data":{"role":"assistant","text":"Well hello to you too, Sam! It's lovely to see you."}}
+{"id":"1776609892625-zk96l","ts":1776609892625,"sessionId":"1776609826681-ygfzj","type":"visual_observation","data":{"description":"Sam is scanning the environment again with a searching look, appearing restless.","emotion_hint":"confused"}}
+{"id":"1776609893066-jmlsk","ts":1776609893066,"sessionId":"1776609826681-ygfzj","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Scanning behavior repeated, appears restless and searching."}}
+{"id":"1776609900318-0p2dr","ts":1776609900318,"sessionId":"1776609826681-ygfzj","type":"conversation_turn","data":{"role":"assistant","text":"You're looking around again, Sam. Is there something specific you need help with?"}}
+{"id":"1776609949488-0zata","ts":1776609949488,"sessionId":"1776609826681-ygfzj","type":"visual_observation","data":{"description":"Sam remains propped in bed, still scanning the surroundings with a restless expression.","emotion_hint":"restless"}}
+{"id":"1776609950044-zmtrc","ts":1776609950044,"sessionId":"1776609826681-ygfzj","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Repeated scanning and restlessness observed during safety scan."}}
+{"id":"1776609950295-hh1m7","ts":1776609950295,"sessionId":"1776609826681-ygfzj","type":"conversation_turn","data":{"role":"assistant","text":"Let me check"}}
+{"id":"1776610027088-huush","ts":1776610027088,"sessionId":"1776609826681-ygfzj","type":"visual_observation","data":{"description":"Sam remains restless in bed, scanning the area with a confused and anxious expression.","emotion_hint":"confused"}}
+{"id":"1776610027489-a3ho9","ts":1776610027489,"sessionId":"1776609826681-ygfzj","type":"behavior_event","data":{"event_type":"general","notes":"Repeated scanning and restless behavior in bed."}}
+{"id":"1776610028101-akafz","ts":1776610028101,"sessionId":"1776609826681-ygfzj","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Persistent restlessness and scanning observed."}}
+{"id":"1776610035202-vbnxk","ts":1776610035202,"sessionId":"1776609826681-ygfzj","type":"conversation_turn","data":{"role":"assistant","text":"You seem a little restless now, Sam. Would you like to listen to some Billie Holiday?"}}
+{"id":"1776610043174-hre8e","ts":1776610043174,"sessionId":"1776610043174-ovqvz","type":"session_start","data":{}}
+{"id":"1776610048831-yo94d","ts":1776610048831,"sessionId":"1776610043174-ovqvz","type":"visual_observation","data":{"description":"Person approaches the camera, standing and looking towards the device.","emotion_hint":"calm"}}
+{"id":"1776610049909-fdj6a","ts":1776610049909,"sessionId":"1776610043174-ovqvz","type":"mood_observation","data":{"mood":"calm","intensity":"mild"}}
+{"id":"1776610055538-eix54","ts":1776610055538,"sessionId":"1776610043174-ovqvz","type":"conversation_turn","data":{"role":"assistant","text":"Well, hello Sam! It's lovely to see you this morning."}}
+{"id":"1776610083435-zo4i1","ts":1776610083435,"sessionId":"1776610043174-ovqvz","type":"visual_observation","data":{"description":"Sam is standing near the camera, looking engaged.","emotion_hint":"engaged"}}
+{"id":"1776610087460-mkqtl","ts":1776610087460,"sessionId":"1776610043174-ovqvz","type":"conversation_turn","data":{"role":"assistant","text":"Oh, hello there! It's nice to see you."}}
+{"id":"1776610088589-3ehah","ts":1776610088589,"sessionId":"1776610043174-ovqvz","type":"conversation_turn","data":{"role":"assistant","text":"Sam, it's good to see you. Are you starting your day?"}}
+{"id":"1776610101511-71hjr","ts":1776610101511,"sessionId":"1776610043174-ovqvz","type":"session_end","data":{}}
+{"id":"1776610129952-6qi82","ts":1776610129952,"sessionId":"1776610043174-ovqvz","type":"visual_observation","data":{"description":"Sam is continuing to scan the room with a confused and restless expression, showing persistent searching behavior.","emotion_hint":"confused"}}
+{"id":"1776610130414-nr7vm","ts":1776610130414,"sessionId":"1776610043174-ovqvz","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Persistent scanning and restless behavior continues after previous interactions."}}
+{"id":"1776610130857-wiq6j","ts":1776610130857,"sessionId":"1776610043174-ovqvz","type":"behavior_event","data":{"event_type":"repetitive_question","notes":"Repeated episodes of scanning and searching behavior suggesting confusion."}}
+{"id":"1776610137386-581hu","ts":1776610137386,"sessionId":"1776610043174-ovqvz","type":"conversation_turn","data":{"role":"assistant","text":"It feels like you're searching for something, Sam. Can I help you find it?"}}
+{"id":"1776610159645-iyjm5","ts":1776610159645,"sessionId":"1776610043174-ovqvz","type":"caregiver_alert","data":{"severity":"medium","reason":"Sam is exhibiting persistent restless and scanning behavior, indicating moderate and unresolved confusion despite redirection attempts."}}
+{"id":"1776610164186-60sif","ts":1776610164186,"sessionId":"1776610043174-ovqvz","type":"conversation_turn","data":{"role":"assistant","text":"Hello there! It's nice to see you."}}
+{"id":"1776610174162-16af5","ts":1776610174162,"sessionId":"1776610043174-ovqvz","type":"caregiver_alert","data":{"severity":"high","reason":"Possible fall detected by motion sensor (confidence 71%)"}}
+{"id":"1776610177108-1l715","ts":1776610177108,"sessionId":"1776610043174-ovqvz","type":"behavior_event","data":{"event_type":"fall_detected","notes":"Patient appears to have fallen — on floor"}}
+{"id":"1776610177484-94xkt","ts":1776610177484,"sessionId":"1776610043174-ovqvz","type":"caregiver_alert","data":{"severity":"high","reason":"Patient has fallen — immediate response needed"}}
+{"id":"1776610184107-n1fir","ts":1776610184107,"sessionId":"1776610043174-ovqvz","type":"conversation_turn","data":{"role":"assistant","text":"Sam, are you alright? I'm here, and help is coming right away."}}
+{"id":"1776610236362-xbeyz","ts":1776610236362,"sessionId":"1776610043174-ovqvz","type":"visual_observation","data":{"description":"Sam is on the floor, continuing to scan the area with a highly confused expression.","emotion_hint":"confused"}}
+{"id":"1776610236963-aseaa","ts":1776610236964,"sessionId":"1776610043174-ovqvz","type":"mood_observation","data":{"mood":"confused","intensity":"severe","notes":"Confusion persists following confirmed fall event, restless scanning continues."}}
+{"id":"1776610242925-pf5ma","ts":1776610242925,"sessionId":"1776610043174-ovqvz","type":"conversation_turn","data":{"role":"assistant","text":"You seem to be looking for something, Sam. Can I help you find it?"}}
+{"id":"1776610292234-e1uom","ts":1776610292234,"sessionId":"1776610292233-st3p2","type":"session_start","data":{}}
+{"id":"1776610297872-cf9d1","ts":1776610297872,"sessionId":"1776610292233-st3p2","type":"session_end","data":{}}
+{"id":"1776610303631-do7d9","ts":1776610303631,"sessionId":"1776610303631-qif4q","type":"session_start","data":{}}
+{"id":"1776610309264-lkwxu","ts":1776610309264,"sessionId":"1776610303631-qif4q","type":"session_end","data":{}}
+{"id":"1776610371242-9l8tr","ts":1776610371242,"sessionId":"1776610371242-cjyyo","type":"session_start","data":{}}
+{"id":"1776610377721-c54vs","ts":1776610377721,"sessionId":"1776610371242-cjyyo","type":"visual_observation","data":{"description":"Sam scanning the room, furrowed brow.","emotion_hint":"confused"}}
+{"id":"1776610377851-t5vnd","ts":1776610377851,"sessionId":"1776610371242-cjyyo","type":"mood_observation","data":{"mood":"confused","intensity":"mild"}}
+{"id":"1776610380073-jrv2r","ts":1776610380073,"sessionId":"1776610371242-cjyyo","type":"conversation_turn","data":{"role":"assistant","text":"I'm right here, Sam. Are you looking for something?"}}
+{"id":"1776610386307-e8ql5","ts":1776610386307,"sessionId":"1776610371242-cjyyo","type":"conversation_turn","data":{"role":"user","text":"just wanted to say hi. <noise>"}}
+{"id":"1776610386906-zabva","ts":1776610386906,"sessionId":"1776610371242-cjyyo","type":"visual_observation","data":{"description":"Person is sitting up in bed, looking towards the camera with a neutral expression.","emotion_hint":"calm"}}
+{"id":"1776610389773-s49wu","ts":1776610389773,"sessionId":"1776610371242-cjyyo","type":"conversation_turn","data":{"role":"assistant","text":"Well hello to you too, Sam! It's lovely to see you."}}
+{"id":"1776610414142-4yug8","ts":1776610414142,"sessionId":"1776610371242-cjyyo","type":"session_end","data":{}}
+{"id":"1776610505061-ljfzx","ts":1776610505061,"sessionId":"1776610505061-uui4o","type":"session_start","data":{}}
+{"id":"1776610512747-rj3u6","ts":1776610512747,"sessionId":"1776610505061-uui4o","type":"visual_observation","data":{"description":"Sam is scanning the room left and right with an uncertain expression.","emotion_hint":"confused"}}
+{"id":"1776610517315-2eiyu","ts":1776610517315,"sessionId":"1776610505061-uui4o","type":"mood_observation","data":{"mood":"confused","intensity":"mild","notes":"Scanning room, uncertain expression. Gently redirected."}}
+{"id":"1776610519245-xyqzk","ts":1776610519245,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"I'm right here, Sam. Are you looking for something?"}}
+{"id":"1776610530508-qi1vs","ts":1776610530508,"sessionId":"1776610505061-uui4o","type":"visual_observation","data":{"description":"Sam is looking down with a sad and confused expression, verbalizing memory loss.","emotion_hint":"distressed"}}
+{"id":"1776610531358-aafd5","ts":1776610531358,"sessionId":"1776610505061-uui4o","type":"mood_observation","data":{"mood":"distressed","intensity":"moderate","notes":"Expressed profound memory loss and appeared distressed."}}
+{"id":"1776610532653-v9mxa","ts":1776610532653,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"user","text":"Um, I don't remember much of anything at all. หลับ มี ความ"}}
+{"id":"1776610541482-xexm3","ts":1776610541482,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"Oh Sam, that must be so difficult. It's alright, though, Mira is here with you.We can just enjoy the quiet together for a little while."}}
+{"id":"1776610546717-dqo04","ts":1776610546717,"sessionId":"1776610505061-uui4o","type":"visual_observation","data":{"description":"Sam is staring intently at the camera with a sad and resolute expression.","emotion_hint":"sad"}}
+{"id":"1776610548347-8uugw","ts":1776610548347,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"user","text":"But I want to remember things."}}
+{"id":"1776610557115-dzg67","ts":1776610557115,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"I know Sam. Sometimes it helps to look at happy memories. I have a beautiful photo here.That's you and Harold in Singapore."}}
+{"id":"1776610568064-qf7eq","ts":1776610568064,"sessionId":"1776610505061-uui4o","type":"visual_observation","data":{"description":"Sam sighed and is now looking down, appearing sad and withdrawn after viewing the photo.","emotion_hint":"sad"}}
+{"id":"1776610568573-5jrbq","ts":1776610568573,"sessionId":"1776610505061-uui4o","type":"mood_observation","data":{"mood":"sad","intensity":"mild","notes":"Sighed and looked sad after seeing photo, possibly due to memory response."}}
+{"id":"1776610570025-4rm9e","ts":1776610570025,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"user","text":"อ"}}
+{"id":"1776610574788-nvmqg","ts":1776610574788,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"Do you remember how beautiful the water was that day?It looks so peaceful."}}
+{"id":"1776610582827-p58gt","ts":1776610582827,"sessionId":"1776610505061-uui4o","type":"visual_observation","data":{"description":"Sam is looking directly at the camera with a focused expression, actively requesting help with memories.","emotion_hint":"engaged"}}
+{"id":"1776610584391-pr302","ts":1776610584391,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"user","text":"Uh can you help me remember another memory?"}}
+{"id":"1776610590996-chpx1","ts":1776610590996,"sessionId":"1776610505061-uui4o","type":"caregiver_alert","data":{"severity":"medium","reason":"[Transcript] Patient is asking for help: \"Uh can you help me remember another memory?\""}}
+{"id":"1776610590996-ojcy5","ts":1776610590996,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"Of course, Nana. How about we look at something from your sweet Lucy?She drew this just for you."}}
+{"id":"1776610612693-32rv3","ts":1776610612693,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"Well hello there! It's lovely to see you."}}

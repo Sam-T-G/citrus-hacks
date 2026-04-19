@@ -1,2 +1,7 @@
 {"ts":1776608536857,"sessionId":"1776608523599-8be21","severity":"high","reason":"Possible fall detected by motion sensor (confidence 77%)"}
 {"ts":1776608541778,"sessionId":"1776608523599-8be21","severity":"high","reason":"Patient has fallen — immediate response needed"}
+{"ts":1776609648326,"sessionId":"1776609632831-cae2j","severity":"high","reason":"Possible fall detected by motion sensor (confidence 66%)"}
+{"ts":1776610159645,"sessionId":"1776610043174-ovqvz","severity":"medium","reason":"Sam is exhibiting persistent restless and scanning behavior, indicating moderate and unresolved confusion despite redirection attempts."}
+{"ts":1776610174163,"sessionId":"1776610043174-ovqvz","severity":"high","reason":"Possible fall detected by motion sensor (confidence 71%)"}
+{"ts":1776610177484,"sessionId":"1776610043174-ovqvz","severity":"high","reason":"Patient has fallen — immediate response needed"}
+{"ts":1776610590996,"sessionId":"1776610505061-uui4o","severity":"medium","reason":"[Transcript] Patient is asking for help: \"Uh can you help me remember another memory?\""}

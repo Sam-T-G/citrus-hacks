@@ -95,7 +95,7 @@ const TOOLS: Tool[] = [{
     },
     {
       name: 'wave_wing',
-      description: 'Wave the servo wing. Use for greetings or excitement.',
+      description: 'Wave the servo wing. Wave often and freely — every hello, good morning, goodbye. Also: she laughs, smiles, shares a memory, good news, encouragement, any warm or playful moment. When uncertain, wave anyway. Pair with set_face(happy) or set_face(wink).',
     },
 
     // ── Dementia care observation ─────────────────────────────
@@ -180,6 +180,20 @@ const TOOLS: Tool[] = [{
         required: ['description', 'emotion_hint'],
       },
     },
+    {
+      name: 'show_photo',
+      description: 'Display a memory photo on screen for the person to see and talk about. Use this to spark memories, comfort them, or redirect gently. Call it naturally mid-conversation — say something warm first, then show the photo. Great for Harold, Singapore, Lucy\'s drawings, or any topic they love.',
+      parameters: {
+        type: Type.OBJECT,
+        properties: {
+          photo_id: {
+            type: Type.STRING,
+            description: 'The id of the memory photo to display (from the available memories list in your system prompt)',
+          },
+        },
+        required: ['photo_id'],
+      },
+    },
   ],
 }];
 
@@ -199,6 +213,7 @@ export interface EngineCallbacks {
   onArduinoCommand:     (cmd: ArduinoCommand)      => void;
   onCaregiverAlert:     (severity: AlertSeverity, reason: string) => void;
   onVisualObservation?: (obs: GeminiObservation)   => void;
+  onPhotoDisplay?:      (photoId: string)          => void;
   onFacePan?:           (pixelX: number)           => void;
   onAmbientCue?:        (cue: string, conf: number) => void;
   onError:              (error: Error)             => void;
@@ -834,6 +849,15 @@ export class GeminiLiveEngine {
             this.cb.onVisualObservation?.(obs);
             this._addContext('Visual', `${obs.emotionHint} — ${obs.description}`);
             logService.visual({ description: obs.description, emotion_hint: obs.emotionHint });
+            break;
+          }
+
+          case 'show_photo': {
+            const photoId = String(args.photo_id ?? '');
+            if (photoId) {
+              this.cb.onPhotoDisplay?.(photoId);
+              this._addContext('Photo', `Showing photo: ${photoId}`);
+            }
             break;
           }
         }
