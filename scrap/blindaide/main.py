@@ -2,12 +2,12 @@ import cv2
 import threading
 import time
 
-from vision import analyze_frame
-from context_engine import ContextEngine
-from braille import text_to_cells
-from serial_bridge import SerialBridge
-from chord_input import ChordDecoder
-from audio import speak
+from scrap.blindaide.vision import analyze_frame
+from scrap.blindaide.context_engine import ContextEngine
+from scrap.blindaide.braille import text_to_cells
+from scrap.blindaide.serial_bridge import SerialBridge
+from scrap.blindaide.chord_input import ChordDecoder
+from scrap.blindaide.audio import speak
 
 CV_MODE    = 'cv'
 TEXT_MODE  = 'text'
@@ -166,7 +166,7 @@ def main():
             speak(user_in)
 
         elif mode == VOICE_MODE:
-            from audio import listen_for_input
+            from scrap.blindaide.audio import listen_for_input
             print("Listening...")
             text = listen_for_input(timeout=5)
             if text:

@@ -1,4 +1,4 @@
-from braille import REVERSE_MAP, CAPITAL_PREFIX
+from scrap.blindaide.braille import REVERSE_MAP, CAPITAL_PREFIX
 
 # Control command bytes — must match the CMD_* constants in blindaide.ino.
 # All values are > 0x3F so they never collide with valid 6-bit chord bytes.

@@ -1,0 +1,18 @@
+{
+  "sessions": [
+    {
+      "id": "7e21cc8e",
+      "started": "2026-04-19T05:24:20.530417+00:00",
+      "ended": "2026-04-19T05:24:25.683667+00:00",
+      "summary": "Session ended normally."
+    },
+    {
+      "id": "118d4a19",
+      "started": "2026-04-19T05:29:12.496972+00:00",
+      "ended": "2026-04-19T05:29:17.650648+00:00",
+      "summary": "Session ended normally."
+    }
+  ],
+  "carer_notes": [],
+  "mood_log": []
+}

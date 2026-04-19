@@ -1,5 +1,5 @@
 import time
-from config import (
+from scrap.blindaide.config import (
     GAZE_THRESHOLD, SMILE_THRESHOLD, BROW_THRESHOLD,
     NOD_THRESHOLD, FACE_NEAR_PX, FACE_FAR_PX, DEBOUNCE_SECS
 )

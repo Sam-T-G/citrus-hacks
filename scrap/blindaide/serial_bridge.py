@@ -1,7 +1,7 @@
 import serial
 import serial.tools.list_ports
 import time
-from config import SERIAL_PORT, SERIAL_BAUD
+from scrap.blindaide.config import SERIAL_PORT, SERIAL_BAUD
 
 
 def find_arduino_port():
@@ -29,8 +29,8 @@ class SerialBridge:
 
     def send_text(self, text, cell_duration=None):
         """Send a full string to the display, one cell at a time."""
-        from config import CELL_DURATION
-        from braille import text_to_cells
+        from scrap.blindaide.config import CELL_DURATION
+        from scrap.blindaide.braille import text_to_cells
         dur = cell_duration if cell_duration is not None else CELL_DURATION
         for cell in text_to_cells(text):
             self.send_cell(cell)

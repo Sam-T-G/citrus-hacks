@@ -1,6 +1,6 @@
 import threading
 import pyttsx3
-from config import TTS_RATE, TTS_ENABLED
+from scrap.blindaide.config import TTS_RATE, TTS_ENABLED
 
 engine = pyttsx3.init()
 engine.setProperty('rate', TTS_RATE)
