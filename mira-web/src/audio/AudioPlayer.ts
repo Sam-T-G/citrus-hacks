@@ -26,6 +26,14 @@ export class AudioPlayer {
 
   /** Decode and schedule a base64-encoded PCM16 chunk for playback. */
   playChunk(base64: string): void {
+    if (this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(console.error);
+    }
+    if (this.ctx.state === 'closed') {
+      this.ctx = new AudioContext({ sampleRate: 24000 });
+      this.nextStartTime = 0;
+    }
+
     const raw    = atob(base64);
     const bytes  = new Uint8Array(raw.length);
     for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
@@ -34,6 +42,8 @@ export class AudioPlayer {
     const float32 = new Float32Array(pcm16.length);
     for (let i = 0; i < pcm16.length; i++) float32[i] = pcm16[i] / 32767;
 
+    console.debug('[AudioPlayer] playChunk samples:', float32.length, 'ctx state:', this.ctx.state);
+
     const buffer = this.ctx.createBuffer(1, float32.length, 24000);
     buffer.getChannelData(0).set(float32);
 
@@ -41,7 +51,6 @@ export class AudioPlayer {
     source.buffer = buffer;
     source.connect(this.ctx.destination);
 
-    // Schedule back-to-back: start where the last chunk will end
     const now     = this.ctx.currentTime;
     const startAt = Math.max(now, this.nextStartTime);
     source.start(startAt);

@@ -2,18 +2,12 @@ import type { ArduinoCommand } from '../types';
 
 const SEP = '||';
 
-const VALID_FACES  = new Set(['calm', 'happy', 'thinking', 'sleepy', 'listening']);
-const VALID_LEDS   = new Set(['warm', 'cool', 'off']);
+const VALID_FACES = new Set(['plain', 'robot', 'tears', 'dizzy', 'happy', 'wink', 'dead']);
 
 function validate(raw: Record<string, unknown>): ArduinoCommand {
   const cmd: ArduinoCommand = {};
-  if (typeof raw.face   === 'string' && VALID_FACES.has(raw.face))   cmd.face   = raw.face   as ArduinoCommand['face'];
-  if (typeof raw.led    === 'string' && VALID_LEDS.has(raw.led))      cmd.led    = raw.led    as ArduinoCommand['led'];
-  if (typeof raw.servo  === 'number' && raw.servo >= 0 && raw.servo <= 180) cmd.servo = raw.servo;
-  if (typeof raw.chime  === 'number') cmd.chime   = raw.chime;
-  if (typeof raw.photo  === 'string') cmd.photo   = raw.photo;
-  if (typeof raw.caption=== 'string') cmd.caption = raw.caption;
-  if (raw.screen === 'off')           cmd.screen  = 'off';
+  if (typeof raw.face === 'string' && VALID_FACES.has(raw.face)) cmd.face = raw.face as ArduinoCommand['face'];
+  if (raw.wave === 1) cmd.wave = 1;
   return cmd;
 }
 

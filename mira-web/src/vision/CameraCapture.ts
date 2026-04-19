@@ -10,6 +10,10 @@ export class CameraCapture {
   private canvas:    HTMLCanvasElement | null = null;
   private intervalId: ReturnType<typeof setInterval> | null = null;
   private previewEl:  HTMLVideoElement | null = null;
+  private videoEl:    HTMLVideoElement | null = null;
+
+  /** Exposes the live video element so other systems (e.g. MediaPipe) can share the stream. */
+  getVideoElement(): HTMLVideoElement | null { return this.videoEl; }
 
   async start(onFrame: (base64jpeg: string) => void, fps = 1): Promise<void> {
     this.stream = await navigator.mediaDevices.getUserMedia({
@@ -21,6 +25,7 @@ export class CameraCapture {
     video.srcObject = this.stream;
     video.muted     = true;
     await video.play();
+    this.videoEl = video;
 
     // Wire preview if already attached
     if (this.previewEl) {
@@ -58,5 +63,6 @@ export class CameraCapture {
     this.stream     = null;
     this.canvas     = null;
     this.intervalId = null;
+    this.videoEl    = null;
   }
 }

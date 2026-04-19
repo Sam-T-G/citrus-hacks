@@ -1,15 +1,5 @@
-/**
- * Standalone panel for testing each piece of the audio pipeline in isolation
- * before running a full session.
- *
- * Section 1 — Microphone: starts mic capture and shows a live level meter.
- * Section 2 — Speaker:    plays a generated sine-wave tone at selectable pitch.
- * Section 3 — Gemini:     opens a minimal Gemini Live session (audio only, no
- *              camera) so you can confirm the full round-trip works.
- */
 import { useState, useRef } from 'react';
 import { useMicLevel }       from '../hooks/useMicLevel';
-import { AudioPlayer }       from '../audio/AudioPlayer';
 import { GeminiLiveEngine }  from '../engine/GeminiLiveEngine';
 import type { EngineState }  from '../types';
 
@@ -48,24 +38,26 @@ export function VoiceTestPanel() {
   const engineRef = useRef<GeminiLiveEngine | null>(null);
 
   function log(msg: string) {
-    setGeminiLog(prev => [...prev.slice(-6), msg]);
+    setGeminiLog(prev => [...prev.slice(-7), msg]);
   }
 
   async function startGeminiTest() {
     setGeminiState('connecting');
     setGeminiLog([]);
     const engine = new GeminiLiveEngine({
-      onConnected:      () => { setGeminiState('listening'); log('✓ Connected to Gemini'); engine.injectGreeting('Say exactly: "Audio test successful."'); },
+      onConnected:      () => { setGeminiState('listening'); log('Connected to Gemini'); engine.injectGreeting('Say exactly: "Audio test successful."'); },
       onDisconnected:   () => { setGeminiState('idle'); log('Disconnected'); },
-      onSpeakingStart:  () => { setGeminiState('speaking'); log('▶ Mira speaking…'); },
-      onSpeakingEnd:    () => { setGeminiState('listening'); log('◉ Listening…'); },
-      onAssistantText:  (t) => log(`Mira: ${t.slice(0, 60)}`),
-      onUserTranscript: (t) => log(`You: ${t.slice(0, 60)}`),
-      onError:          (e) => { setGeminiState('idle'); log(`✗ ${e.message}`); },
+      onSpeakingStart:  () => { setGeminiState('speaking'); log('Mira speaking…'); },
+      onSpeakingEnd:    () => { setGeminiState('listening'); log('Listening…'); },
+      onAssistantText:   (t) => log(`Mira: ${t.slice(0, 60)}`),
+      onUserTranscript:  (t) => log(`You: ${t.slice(0, 60)}`),
+      onArduinoCommand:  (cmd) => log(`face: ${cmd.face ?? ''}${cmd.wave ? ' + wave' : ''}`),
+      onCaregiverAlert:  (s, r) => log(`alert[${s}]: ${r}`),
+      onError:           (e) => { setGeminiState('idle'); log(`Error: ${e.message}`); },
     });
     engineRef.current = engine;
     try { await engine.start(); }
-    catch (e) { setGeminiState('idle'); log(`✗ ${String(e)}`); }
+    catch (e) { setGeminiState('idle'); log(`Failed: ${String(e)}`); }
   }
 
   async function stopGeminiTest() {
@@ -75,61 +67,90 @@ export function VoiceTestPanel() {
     log('Session stopped');
   }
 
-  const playerRef = useRef<AudioPlayer | null>(null);
-  if (!playerRef.current) playerRef.current = new AudioPlayer();
-
   return (
     <div className="voice-test">
 
       {/* ── Mic ────────────────────────────────────────────── */}
-      <div className="card test-section">
-        <div className="card__label">1 — Microphone</div>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 10 }}>
-          Verify your mic is captured. Speak and watch the level bar respond.
-        </p>
-        <button type="button" className={`btn btn--sm ${micActive ? 'btn--danger' : 'btn--ghost'}`} onClick={toggleMic}>
+      <div className="card">
+        <div className="card__label">01 — Microphone</div>
+        <div className="card__title">Input Capture</div>
+        <div className="card__desc">Verify your mic is captured. Speak and watch the level meter respond.</div>
+        <button
+          type="button"
+          className={`btn btn--sm ${micActive ? 'btn--danger' : 'btn--ghost'}`}
+          onClick={toggleMic}
+        >
           {micActive ? 'Stop Mic' : 'Start Mic'}
         </button>
         <div className="mic-meter">
           <div className="mic-meter__bar" style={{ width: `${level * 100}%` }} />
         </div>
-        <p className="test-status">{micActive ? 'Mic active — speak to see level' : 'Mic off'}</p>
+        <div className="test-status">
+          {micActive ? (
+            <>
+              <span className="dot dot--pulse" style={{ color: 'var(--green)' }} />
+              Mic active — speak to see level
+            </>
+          ) : (
+            'Mic off'
+          )}
+        </div>
       </div>
 
       {/* ── Speaker ────────────────────────────────────────── */}
-      <div className="card test-section">
-        <div className="card__label">2 — Speaker</div>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 10 }}>
-          Play a tone to confirm audio output is working.
-        </p>
+      <div className="card">
+        <div className="card__label">02 — Speaker</div>
+        <div className="card__title">Audio Output</div>
+        <div className="card__desc">Play a tone to confirm audio output is working through your speakers.</div>
         <div className="tone-row">
           {([220, 440, 880] as const).map(f => (
-            <button type="button" key={f} className="btn btn--sm btn--ghost" onClick={() => playTone(f)} disabled={tonesPlaying}>
+            <button
+              type="button"
+              key={f}
+              className="btn btn--sm btn--ghost"
+              onClick={() => playTone(f)}
+              disabled={tonesPlaying}
+            >
               {f} Hz
             </button>
           ))}
         </div>
-        <p className="test-status">{tonesPlaying ? '▶ Playing tone…' : 'Press a button to play'}</p>
+        <div className="test-status">
+          {tonesPlaying ? (
+            <>
+              <span className="dot dot--pulse" style={{ color: 'var(--amber)' }} />
+              Playing tone…
+            </>
+          ) : (
+            'Select a frequency to play'
+          )}
+        </div>
       </div>
 
       {/* ── Gemini round-trip ──────────────────────────────── */}
-      <div className="card test-section">
-        <div className="card__label">3 — Gemini Live Round-Trip</div>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 10 }}>
-          Opens a minimal Gemini session (audio only). Mira will say a test phrase,
-          then you can speak to confirm the full pipeline.
-        </p>
+      <div className="card">
+        <div className="card__label">03 — Gemini Live</div>
+        <div className="card__title">Full Round-Trip</div>
+        <div className="card__desc">
+          Opens a minimal Gemini session with audio only. Mira will speak a test phrase,
+          then you can talk to verify the full pipeline.
+        </div>
         {geminiState === 'idle'
           ? <button type="button" className="btn btn--sm btn--primary" onClick={startGeminiTest}>Start Test</button>
-          : <button type="button" className="btn btn--sm btn--danger"  onClick={stopGeminiTest}>Stop</button>
+          : (
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <span className={`pill pill--${geminiState}`}>
+                <span className="dot dot--pulse" />
+                {geminiState === 'speaking' ? 'Speaking' : geminiState === 'connecting' ? 'Connecting' : 'Listening'}
+              </span>
+              <button type="button" className="btn btn--sm btn--danger" onClick={stopGeminiTest}>Stop</button>
+            </div>
+          )
         }
-        <p className="test-status">
-          {geminiState !== 'idle' && <span className={`pill pill--${geminiState}`} style={{ marginRight: 8 }}><span className="dot dot--pulse" />{geminiState}</span>}
-        </p>
         {geminiLog.length > 0 && (
-          <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <div className="gemini-log">
             {geminiLog.map((line, i) => (
-              <div key={i} style={{ fontSize: 12, fontFamily: 'monospace', color: 'var(--text-muted)' }}>{line}</div>
+              <div key={i} className="gemini-log__line">{line}</div>
             ))}
           </div>
         )}
