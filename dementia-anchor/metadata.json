@@ -1,0 +1,13 @@
+{
+  "name": "Dementia Anchor",
+  "description": "A life-companion robot interface for dementia patients, featuring camera-based person tracking, memory storage, and cognitive anchoring summaries.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "Vision Analysis",
+    "Voice Interaction",
+    "Memory Management"
+  ]
+}
