@@ -85,11 +85,21 @@ void dead(){
 }
 
 void wave(){
-  for(pos = 0; pos <= 180; pos++){
+  for(pos = 0; pos <= 90; pos++){
     myservo.write(pos);
     delay(5);
   }
-  for(pos = 180; pos >= 0; pos--){
+  for(int i = 0; i < 3; i++){
+    for(pos = 90; pos <= 135; pos++){
+      myservo.write(pos);
+     delay(5);
+    }
+    for(pos = 135; pos >= 90; pos--){
+      myservo.write(pos);
+      delay(5);
+    }
+  }
+  for(pos = 90; pos >= 0; pos--){
     myservo.write(pos);
     delay(5);
   }
@@ -111,7 +121,6 @@ void mood(String emo){
   } else if(emo == "dead\n"){
     dead();
   } else if(emo == "wave\n"){
-    wave();
     wave();
   }
   emo = " ";
