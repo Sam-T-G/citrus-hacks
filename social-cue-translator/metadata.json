@@ -1,6 +1,0 @@
-{
-  "name": "BrailleVision: Social Cue Translator",
-  "description": "A computer vision module for detecting social cues (waves, nods, shakes) to assist blind individuals in social interactions.",
-  "requestFramePermissions": ["camera"],
-  "majorCapabilities": []
-}
