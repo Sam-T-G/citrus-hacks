@@ -1,6 +1,10 @@
 export const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY as string;
-export const GEMINI_MODEL   = 'gemini-2.5-flash-native-audio-preview-05-20';
-export const GEMINI_VOICE   = 'Aoede';
+
+// gemini-2.5-flash-native-audio-preview-12-2025 — flagship Live API model,
+// production-recommended for low-latency bidirectional voice + video.
+// Swap to gemini-3.1-flash-live-preview for the newer high-quality variant.
+export const GEMINI_MODEL = 'gemini-2.5-flash-native-audio-preview-12-2025';
+export const GEMINI_VOICE = 'Aoede';
 
 export const PERSON_NAME = 'Sam';
 
