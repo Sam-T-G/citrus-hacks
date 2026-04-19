@@ -36,8 +36,9 @@ STATUS.md           # current sprint — read this for live context
 ## Key Docs (read in order if catching up)
 1. [Architecture](docs/ARCHITECTURE.md) — system design, data flow, component boundaries
 2. [Hardware](docs/HARDWARE.md) — Arduino pinouts, wiring, physical build
-3. [Decisions](docs/DECISIONS.md) — why we chose X over Y
-4. [Status](STATUS.md) — what's being worked on right now
+3. [Breadboard Demo](docs/BREADBOARD_DEMO.md) — step-by-step button wiring and test guide
+4. [Decisions](docs/DECISIONS.md) — why we chose X over Y
+5. [Status](STATUS.md) — what's being worked on right now
 
 ## Conventions
 - **Firmware**: `prototypes/blindaide/blindaide.ino` is the single production sketch

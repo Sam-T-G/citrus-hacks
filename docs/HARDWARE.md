@@ -35,7 +35,7 @@ D10 (PWM)   | Dot 5       |
 D11 (PWM)   | Dot 6       |
 ```
 
-### Chord keyboard inputs
+### Chord keyboard inputs (dots 1–6)
 ```
 Arduino Pin | Braille Dot | Finger (standard)
 ------------|-------------|------------------
@@ -46,7 +46,26 @@ A3          | Dot 4       | Right index
 A4          | Dot 5       | Right middle
 A5          | Dot 6       | Right ring
 ```
-All button pins use `INPUT_PULLUP`. Wire one leg to pin, other leg to GND.
+
+### Control buttons
+```
+Arduino Pin | Function       | Sends byte | Physical position
+------------|----------------|------------|--------------------
+D2          | Finish letter  | 0x41       | Column 3, top
+D4          | Backspace      | 0x42       | Column 3, middle
+D7          | Send           | 0x43       | Column 3, bottom
+D8          | Space          | 0x40       | Below column 2
+```
+
+All 10 button pins use `INPUT_PULLUP`. Wire one leg to pin, other leg to GND.
+
+### Physical button layout
+```
+[ dot 1 ]  [ dot 4 ]  [ FINISH ]
+[ dot 2 ]  [ dot 5 ]  [ BKSPC  ]
+[ dot 3 ]  [ dot 6 ]  [ SEND   ]
+           [ SPACE  ]
+```
 
 ### Reserved
 ```
