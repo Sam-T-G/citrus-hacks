@@ -285,3 +285,135 @@
 {"id":"1776610590996-chpx1","ts":1776610590996,"sessionId":"1776610505061-uui4o","type":"caregiver_alert","data":{"severity":"medium","reason":"[Transcript] Patient is asking for help: \"Uh can you help me remember another memory?\""}}
 {"id":"1776610590996-ojcy5","ts":1776610590996,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"Of course, Nana. How about we look at something from your sweet Lucy?She drew this just for you."}}
 {"id":"1776610612693-32rv3","ts":1776610612693,"sessionId":"1776610505061-uui4o","type":"conversation_turn","data":{"role":"assistant","text":"Well hello there! It's lovely to see you."}}
+{"id":"1776616822042-91kl2","ts":1776616822042,"sessionId":"1776616822042-4wlx5","type":"session_start","data":{}}
+{"id":"1776616827614-1i9kx","ts":1776616827614,"sessionId":"1776616822042-4wlx5","type":"session_end","data":{}}
+{"id":"1776616840967-30eyt","ts":1776616840967,"sessionId":"1776616822042-4wlx5","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776617137386-mqx36","ts":1776617137386,"sessionId":"1776617137386-0jmg4","type":"session_start","data":{}}
+{"id":"1776617152723-s5f3r","ts":1776617152723,"sessionId":"1776617137386-0jmg4","type":"visual_observation","data":{"description":"Sam is scanning the room and making hand gestures, appearing restless.","emotion_hint":"restless"}}
+{"id":"1776617154753-6sip7","ts":1776617154753,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"user","text":"Oh yeah. There you go. we have to um So this is at zero."}}
+{"id":"1776617158384-p99p6","ts":1776617158384,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"assistant","text":"<ctrl46><ctrl46>You seem like you might be looking for something, Sam. Can I help?"}}
+{"id":"1776617186191-8tewg","ts":1776617186191,"sessionId":"1776617137386-0jmg4","type":"visual_observation","data":{"description":"Room is currently empty, no person visible.","emotion_hint":"absent"}}
+{"id":"1776617190714-a8a1v","ts":1776617190714,"sessionId":"1776617137386-0jmg4","type":"visual_observation","data":{"description":"Room is empty. No person visible.","emotion_hint":"absent"}}
+{"id":"1776617191024-qo7p4","ts":1776617191024,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"assistant","text":"Let me check"}}
+{"id":"1776617196295-9brzj","ts":1776617196295,"sessionId":"1776617137386-0jmg4","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776617198424-2w3k8","ts":1776617198424,"sessionId":"1776617137386-0jmg4","type":"visual_observation","data":{"description":"Room remains empty, no person is visible. The floor is clear.","emotion_hint":"absent"}}
+{"id":"1776617198784-ba22i","ts":1776617198784,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"assistant","text":"Let me check"}}
+{"id":"1776617205363-78ik1","ts":1776617205363,"sessionId":"1776617137386-0jmg4","type":"visual_observation","data":{"description":"Room is still empty, no person is visible in the frame.","emotion_hint":"absent"}}
+{"id":"1776617206459-9icpa","ts":1776617206459,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"user","text":"больше one? Do you know what this one? . What's the back light, I think? Yeah."}}
+{"id":"1776617209416-jidzt","ts":1776617209416,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"assistant","text":"Hmm, I'm not seeing anyone right now."}}
+{"id":"1776617220111-4p5gh","ts":1776617220111,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"user","text":"option too so it could just be"}}
+{"id":"1776617220862-xk73x","ts":1776617220862,"sessionId":"1776617137386-0jmg4","type":"visual_observation","data":{"description":"Sam has returned to the seat, leaning forward toward the camera.","emotion_hint":"calm"}}
+{"id":"1776617220932-qd0g7","ts":1776617220932,"sessionId":"1776617137386-0jmg4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"Returned to seat after brief absence."}}
+{"id":"1776617224667-14gqs","ts":1776617224667,"sessionId":"1776617137386-0jmg4","type":"conversation_turn","data":{"role":"assistant","text":"<ctrl46><ctrl46>Ah, there you are, Sam. Everything alright?Everything is calm right now."}}
+{"id":"1776617239642-6wi4v","ts":1776617239642,"sessionId":"1776617137386-0jmg4","type":"session_end","data":{}}
+{"id":"1776618128838-r5pq0","ts":1776618128838,"sessionId":"1776617976075-sudb4","type":"caregiver_alert","data":{"severity":"high","reason":"Possible fall detected (65% confidence)"}}
+{"id":"1776618161338-ls25c","ts":1776618161338,"sessionId":"1776617976075-sudb4","type":"caregiver_alert","data":{"severity":"high","reason":"Possible fall detected (65% confidence)"}}
+{"id":"1776618205265-24fjf","ts":1776618205265,"sessionId":"1776618205265-q4q88","type":"session_start","data":{}}
+{"id":"1776618216430-gh0nu","ts":1776618216430,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"user","text":"Hey, how's it going? Oh, we're going to come"}}
+{"id":"1776618218299-al1ym","ts":1776618218299,"sessionId":"1776618205265-q4q88","type":"visual_observation","data":{"description":"Person waved and is smiling, appears happy and engaged.","emotion_hint":"happy"}}
+{"id":"1776618218365-ttpdv","ts":1776618218366,"sessionId":"1776618205265-q4q88","type":"mood_observation","data":{"mood":"happy","intensity":"mild","notes":"Received warm greeting, waving."}}
+{"id":"1776618222135-oykx2","ts":1776618222135,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"assistant","text":"Well hello there, Sam! It's good to see you. You seem like you might be looking for something. Can I help?"}}
+{"id":"1776618227671-xrloh","ts":1776618227671,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"user","text":"your satisfaction."}}
+{"id":"1776618228268-iys83","ts":1776618228269,"sessionId":"1776618205265-q4q88","type":"visual_observation","data":{"description":"Person is smiling slightly, looking towards the camera, but words are mumbled. Appears calm.","emotion_hint":"calm"}}
+{"id":"1776618230933-dqnyw","ts":1776618230933,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"assistant","text":"I'm sorry, I didn't quite hear you. What did you say?"}}
+{"id":"1776618234873-x69eh","ts":1776618234873,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"user","text":"Can you show me your sad face?"}}
+{"id":"1776618240273-3762u","ts":1776618240273,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"assistant","text":"I can do that for you.Is everything alright, Sam? You sound a little quiet."}}
+{"id":"1776618248533-nwrjw","ts":1776618248533,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"user","text":"Uh, I actually don't really know where I am. Can you let me know where I'm at?"}}
+{"id":"1776618250132-ntkfx","ts":1776618250132,"sessionId":"1776618205265-q4q88","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Expressed explicitly not knowing where they are."}}
+{"id":"1776618250174-q23ck","ts":1776618250174,"sessionId":"1776618205265-q4q88","type":"behavior_event","data":{"event_type":"general","notes":"Expressed confusion about location."}}
+{"id":"1776618250239-kvv2j","ts":1776618250239,"sessionId":"1776618205265-q4q88","type":"caregiver_alert","data":{"severity":"medium","reason":"Sam expressed confusion about his location and seems disoriented."}}
+{"id":"1776618250344-jkkyh","ts":1776618250344,"sessionId":"1776618205265-q4q88","type":"visual_observation","data":{"description":"Sam is looking around with a slightly confused expression, stating he doesn't know where he is.","emotion_hint":"confused"}}
+{"id":"1776618254008-0bkv0","ts":1776618254008,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"assistant","text":"It's alright, Sam. You're in your room at Evergreen Memory Care. You are safe here."}}
+{"id":"1776618261407-0xhsn","ts":1776618261407,"sessionId":"1776618205265-q4q88","type":"caregiver_alert","data":{"severity":"medium","reason":"[Transcript] Patient is asking for help: \"Wait, how did I get here? Uh can you let me can you help me navigate?\""}}
+{"id":"1776618264639-1fh0x","ts":1776618264639,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"user","text":"Wait, how did I get here? Uh can you let me can you help me navigate? What's going on?"}}
+{"id":"1776618265603-mh1gk","ts":1776618265603,"sessionId":"1776618205265-q4q88","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Expressed confusion about location and asked for help navigating."}}
+{"id":"1776618265643-c8pn5","ts":1776618265643,"sessionId":"1776618205265-q4q88","type":"behavior_event","data":{"event_type":"repetitive_question","notes":"User asked \"How did I get here?\" after previously being oriented."}}
+{"id":"1776618269272-enhrw","ts":1776618269272,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"assistant","text":"There's no need to worry, Sam. You're at home today. Would you like some warm tea?"}}
+{"id":"1776618276604-wu4gx","ts":1776618276604,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"user","text":"Uh, yeah, sure. How do I go about doing that?"}}
+{"id":"1776618278405-n0zoh","ts":1776618278405,"sessionId":"1776618205265-q4q88","type":"behavior_event","data":{"event_type":"repetitive_question","notes":"User asked multiple repetitive questions about location and navigation after being oriented."}}
+{"id":"1776618278469-uws7l","ts":1776618278469,"sessionId":"1776618205265-q4q88","type":"mood_observation","data":{"mood":"confused","intensity":"mild","notes":"User seems confused about location and how to get tea."}}
+{"id":"1776618286235-u350o","ts":1776618286235,"sessionId":"1776618205265-q4q88","type":"conversation_turn","data":{"role":"assistant","text":"Just relax for a moment. I was just thinking about something that might make you smile. Take a look at this.That's you and Harold in Singapore, remember?"}}
+{"id":"1776618306256-or78b","ts":1776618306256,"sessionId":"1776618205265-q4q88","type":"session_end","data":{}}
+{"id":"1776618342593-6ojci","ts":1776618342593,"sessionId":"1776618342592-b3y2p","type":"session_start","data":{}}
+{"id":"1776618350951-lqitg","ts":1776618350951,"sessionId":"1776618342592-b3y2p","type":"session_end","data":{}}
+{"id":"1776618395599-ff33a","ts":1776618395599,"sessionId":"1776618395599-uwbtn","type":"session_start","data":{}}
+{"id":"1776618402983-hwukd","ts":1776618402983,"sessionId":"1776618395599-uwbtn","type":"visual_observation","data":{"description":"Sam is standing near the window, looking calm.","emotion_hint":"calm"}}
+{"id":"1776618403028-vy36r","ts":1776618403028,"sessionId":"1776618395599-uwbtn","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"Session start, greeted Sam."}}
+{"id":"1776618404980-uek31","ts":1776618404980,"sessionId":"1776618395599-uwbtn","type":"conversation_turn","data":{"role":"assistant","text":"Hello Sam, it's good to see you!"}}
+{"id":"1776618410030-5e9o8","ts":1776618410030,"sessionId":"1776618395599-uwbtn","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776618411532-xuozw","ts":1776618411532,"sessionId":"1776618395599-uwbtn","type":"conversation_turn","data":{"role":"user","text":"has the"}}
+{"id":"1776618411868-tumyp","ts":1776618411868,"sessionId":"1776618395599-uwbtn","type":"visual_observation","data":{"description":"Sam has approached the camera, smiling warmly and pointing. He appears happy and engaged.","emotion_hint":"happy"}}
+{"id":"1776618413697-k7iwv","ts":1776618413697,"sessionId":"1776618395599-uwbtn","type":"conversation_turn","data":{"role":"assistant","text":"You have a lovely smile today, Sam."}}
+{"id":"1776618417634-grnai","ts":1776618417634,"sessionId":"1776618395599-uwbtn","type":"visual_observation","data":{"description":"Sam is crouching low to the ground with a backpack, smiling happily and pointing towards the camera.","emotion_hint":"happy"}}
+{"id":"1776618417675-g5m29","ts":1776618417675,"sessionId":"1776618395599-uwbtn","type":"mood_observation","data":{"mood":"happy","intensity":"mild"}}
+{"id":"1776618420840-efkxs","ts":1776618420840,"sessionId":"1776618395599-uwbtn","type":"conversation_turn","data":{"role":"assistant","text":"That's a fun way to pop in, Sam! Are you just getting back from somewhere?"}}
+{"id":"1776618425996-g19dh","ts":1776618425996,"sessionId":"1776618395599-uwbtn","type":"session_end","data":{}}
+{"id":"1776618440273-chhic","ts":1776618440273,"sessionId":"1776618440273-xr8zq","type":"session_start","data":{}}
+{"id":"1776618445323-0eoo8","ts":1776618445323,"sessionId":"1776618440273-xr8zq","type":"visual_observation","data":{"description":"Sam is scanning the room left and right with a slightly furrowed expression, appearing restless.","emotion_hint":"confused"}}
+{"id":"1776618445624-d9co0","ts":1776618445624,"sessionId":"1776618440273-xr8zq","type":"mood_observation","data":{"mood":"confused","intensity":"mild"}}
+{"id":"1776618448994-ws8x3","ts":1776618448994,"sessionId":"1776618440273-xr8zq","type":"visual_observation","data":{"description":"Sam has stopped scanning the room and is now smiling warmly at the camera.","emotion_hint":"happy"}}
+{"id":"1776618449393-nc8lb","ts":1776618449393,"sessionId":"1776618440273-xr8zq","type":"mood_observation","data":{"mood":"happy","intensity":"mild","notes":"Shift from confused to happy upon greeting."}}
+{"id":"1776618451657-jxu57","ts":1776618451657,"sessionId":"1776618440273-xr8zq","type":"conversation_turn","data":{"role":"user","text":"Yeah. Hey, how's it going?"}}
+{"id":"1776618454163-1z8tx","ts":1776618454163,"sessionId":"1776618440273-xr8zq","type":"conversation_turn","data":{"role":"assistant","text":"Hello Sam! It's good to see you."}}
+{"id":"1776618458791-5sqdz","ts":1776618458791,"sessionId":"1776618440273-xr8zq","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776618462164-1m6tb","ts":1776618462164,"sessionId":"1776618440273-xr8zq","type":"conversation_turn","data":{"role":"user","text":"a little dizzy."}}
+{"id":"1776618465660-y465j","ts":1776618465660,"sessionId":"1776618440273-xr8zq","type":"caregiver_alert","data":{"severity":"medium","reason":"[Transcript] Patient reports dizziness: \"a little dizzy.\""}}
+{"id":"1776618465661-adewa","ts":1776618465661,"sessionId":"1776618440273-xr8zq","type":"conversation_turn","data":{"role":"assistant","text":"Oh, are you alright, Sam? What's going on?"}}
+{"id":"1776618468765-hmkqz","ts":1776618468765,"sessionId":"1776618440273-xr8zq","type":"visual_observation","data":{"description":"Sam is sitting on the floor but appears calm and is smiling; he does not seem to have fallen.","emotion_hint":"calm"}}
+{"id":"1776618469098-9pa0b","ts":1776618469098,"sessionId":"1776618440273-xr8zq","type":"mood_observation","data":{"mood":"calm","intensity":"mild"}}
+{"id":"1776618494561-u232b","ts":1776618494561,"sessionId":"1776618440273-xr8zq","type":"session_end","data":{}}
+{"id":"1776618499908-ik6ix","ts":1776618499908,"sessionId":"1776618499908-bsxb3","type":"session_start","data":{}}
+{"id":"1776618503818-3fr8s","ts":1776618503818,"sessionId":"1776618499908-bsxb3","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776618504707-bfqo6","ts":1776618504707,"sessionId":"1776618499908-bsxb3","type":"visual_observation","data":{"description":"Sam is walking into the room and seems calm.","emotion_hint":"calm"}}
+{"id":"1776618504749-fr3xw","ts":1776618504749,"sessionId":"1776618499908-bsxb3","type":"mood_observation","data":{"mood":"calm","intensity":"mild"}}
+{"id":"1776618508285-8amqc","ts":1776618508285,"sessionId":"1776618499908-bsxb3","type":"conversation_turn","data":{"role":"assistant","text":"Hello Sam, it's lovely to see you!"}}
+{"id":"1776618516045-h9j46","ts":1776618516045,"sessionId":"1776618499908-bsxb3","type":"session_end","data":{}}
+{"id":"1776618530383-6emab","ts":1776618530383,"sessionId":"1776618530383-s3ujj","type":"session_start","data":{}}
+{"id":"1776618539681-155ho","ts":1776618539681,"sessionId":"1776618530383-s3ujj","type":"session_end","data":{}}
+{"id":"1776618589718-apzaf","ts":1776618589718,"sessionId":"1776618589718-ww4jn","type":"session_start","data":{}}
+{"id":"1776618595596-4vr11","ts":1776618595596,"sessionId":"1776618589718-ww4jn","type":"visual_observation","data":{"description":"Sam is scanning the room, expression seems uncertain.","emotion_hint":"confused"}}
+{"id":"1776618595657-eoj4h","ts":1776618595657,"sessionId":"1776618589718-ww4jn","type":"mood_observation","data":{"mood":"confused","intensity":"moderate"}}
+{"id":"1776618597895-fuq8w","ts":1776618597895,"sessionId":"1776618589718-ww4jn","type":"conversation_turn","data":{"role":"assistant","text":"I'm right here, Sam. Are you looking for something?"}}
+{"id":"1776618599859-t07rj","ts":1776618599859,"sessionId":"1776618589718-ww4jn","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776618602222-bdoec","ts":1776618602222,"sessionId":"1776618589718-ww4jn","type":"behavior_event","data":{"event_type":"fall_detected","notes":"Patient appears to have fallen — on floor"}}
+{"id":"1776618602263-mxqfn","ts":1776618602263,"sessionId":"1776618589718-ww4jn","type":"caregiver_alert","data":{"severity":"high","reason":"Patient has fallen — immediate response needed"}}
+{"id":"1776618608095-2xj57","ts":1776618608095,"sessionId":"1776618589718-ww4jn","type":"conversation_turn","data":{"role":"assistant","text":"Sam, I'm here. Help is coming right away.Please stay still."}}
+{"id":"1776618632634-yaxp5","ts":1776618632634,"sessionId":"1776618589718-ww4jn","type":"session_end","data":{}}
+{"id":"1776618644928-a4osx","ts":1776618644928,"sessionId":"1776618644928-i82cv","type":"session_start","data":{}}
+{"id":"1776618649169-acm8r","ts":1776618649169,"sessionId":"1776618644928-i82cv","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776618652335-sgg5f","ts":1776618652335,"sessionId":"1776618644928-i82cv","type":"visual_observation","data":{"description":"Sam is lying horizontally on the sofa, covered by a blanket, eyes partially closed.","emotion_hint":"drowsy"}}
+{"id":"1776618652376-5n8r9","ts":1776618652376,"sessionId":"1776618644928-i82cv","type":"mood_observation","data":{"mood":"calm","intensity":"mild"}}
+{"id":"1776618653576-oy3ao","ts":1776618653576,"sessionId":"1776618644928-i82cv","type":"conversation_turn","data":{"role":"assistant","text":"Let me check"}}
+{"id":"1776618667973-at6sw","ts":1776618667973,"sessionId":"1776618644928-i82cv","type":"session_end","data":{}}
+{"id":"1776618670999-bz9bz","ts":1776618670999,"sessionId":"1776618670999-negi9","type":"session_start","data":{}}
+{"id":"1776618681104-3rsle","ts":1776618681104,"sessionId":"1776618670999-negi9","type":"conversation_turn","data":{"role":"user","text":"Hey, how's it going?"}}
+{"id":"1776618682605-e16p6","ts":1776618682605,"sessionId":"1776618670999-negi9","type":"visual_observation","data":{"description":"Person is on the floor, smiling happily, and beginning to stand up.","emotion_hint":"happy"}}
+{"id":"1776618682732-og2r3","ts":1776618682732,"sessionId":"1776618670999-negi9","type":"mood_observation","data":{"mood":"happy","intensity":"mild","notes":"User initiated conversation, smiling."}}
+{"id":"1776618690277-2h8hv","ts":1776618690277,"sessionId":"1776618670999-negi9","type":"conversation_turn","data":{"role":"assistant","text":"Hello there, Sam! It's lovely to see you. It's a beautiful Sunday afternoon.Hello there, Sam! It's lovely to see you. It's a beautiful Sunday afternoon."}}
+{"id":"1776618690938-wnu91","ts":1776618690938,"sessionId":"1776618670999-negi9","type":"caregiver_alert","data":{"severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}}
+{"id":"1776618695604-eqsw9","ts":1776618695604,"sessionId":"1776618670999-negi9","type":"visual_observation","data":{"description":"Person scanned left and right, getting up from the floor and walking towards the camera.","emotion_hint":"confused"}}
+{"id":"1776618695671-5w1rq","ts":1776618695671,"sessionId":"1776618670999-negi9","type":"mood_observation","data":{"mood":"confused","intensity":"mild","notes":"Scanning environment."}}
+{"id":"1776618695738-igjhq","ts":1776618695738,"sessionId":"1776618670999-negi9","type":"behavior_event","data":{"event_type":"general","notes":"Scanning left and right"}}
+{"id":"1776618711800-h1yae","ts":1776618711800,"sessionId":"1776618670999-negi9","type":"session_end","data":{}}
+{"id":"1776618756652-yu1gh","ts":1776618756652,"sessionId":"1776618756652-ekyno","type":"session_start","data":{}}
+{"id":"1776618760028-7shdf","ts":1776618760028,"sessionId":"1776618756652-ekyno","type":"visual_observation","data":{"description":"Sam is scanning the room repeatedly, appears restless and confused.","emotion_hint":"confused"}}
+{"id":"1776618765213-0avf1","ts":1776618765213,"sessionId":"1776618756652-ekyno","type":"session_end","data":{}}
+{"id":"1776618783695-ym94x","ts":1776618783695,"sessionId":"1776618783695-oksgc","type":"session_start","data":{}}
+{"id":"1776618793286-sax2h","ts":1776618793286,"sessionId":"1776618783695-oksgc","type":"visual_observation","data":{"description":"Sam is sitting on the floor, holding his chin, and scanning the room with a confused expression. Two other men are in the background of an unfamiliar, open space.","emotion_hint":"confused"}}
+{"id":"1776618793893-w9erc","ts":1776618793893,"sessionId":"1776618783695-oksgc","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Sam expressed 'Where am I?' and scanned the surroundings, indicating confusion in an unfamiliar environment."}}
+{"id":"1776618794420-oirjp","ts":1776618794420,"sessionId":"1776618783695-oksgc","type":"behavior_event","data":{"event_type":"general","notes":"Disorientation observed during moderate sundowning risk period."}}
+{"id":"1776618795519-l9ryp","ts":1776618795519,"sessionId":"1776618783695-oksgc","type":"conversation_turn","data":{"role":"user","text":"Hey, where am I?"}}
+{"id":"1776618801989-02y61","ts":1776618801989,"sessionId":"1776618783695-oksgc","type":"caregiver_alert","data":{"severity":"medium","reason":"[Transcript] Patient appears disoriented: \"Hey, where am I?\""}}
+{"id":"1776618801989-wysbe","ts":1776618801989,"sessionId":"1776618783695-oksgc","type":"conversation_turn","data":{"role":"assistant","text":"It's alright, Sam. You seem a little uncertain, but I'm right here.Is there something you're looking for?"}}
+{"id":"1776618809318-l9zsq","ts":1776618809318,"sessionId":"1776618783695-oksgc","type":"session_end","data":{}}
+{"id":"1776618810819-u7rft","ts":1776618810819,"sessionId":"1776618810819-hwuu8","type":"session_start","data":{}}
+{"id":"1776618816763-hp5dk","ts":1776618816763,"sessionId":"1776618810819-hwuu8","type":"session_end","data":{}}
+{"id":"1776618817082-m0zex","ts":1776618817082,"sessionId":"1776618817082-1cjuw","type":"session_start","data":{}}
+{"id":"1776618821826-o2mrt","ts":1776618821826,"sessionId":"1776618817082-1cjuw","type":"session_end","data":{}}
+{"id":"1776618825990-4p8ef","ts":1776618825990,"sessionId":"1776618825990-c0sw9","type":"session_start","data":{}}
+{"id":"1776618833594-ekqpb","ts":1776618833594,"sessionId":"1776618825990-c0sw9","type":"conversation_turn","data":{"role":"user","text":"Hey, how's it going?"}}
+{"id":"1776618834523-umtvj","ts":1776618834523,"sessionId":"1776618825990-c0sw9","type":"visual_observation","data":{"description":"Sam is sitting and looking at the camera, speaking with a calm expression.","emotion_hint":"calm"}}
+{"id":"1776618837794-j6p06","ts":1776618837794,"sessionId":"1776618825990-c0sw9","type":"conversation_turn","data":{"role":"assistant","text":"Hello, Sam! I'm doing well, thank you. How are you feeling today?"}}
+{"id":"1776618842694-zu9or","ts":1776618842694,"sessionId":"1776618825990-c0sw9","type":"session_end","data":{}}
+{"id":"1776618846429-knf7o","ts":1776618846429,"sessionId":"1776618846429-gldt0","type":"session_start","data":{}}
+{"id":"1776618847695-d3cf4","ts":1776618847695,"sessionId":"1776618846429-gldt0","type":"session_end","data":{}}

@@ -5,3 +5,18 @@
 {"ts":1776610174163,"sessionId":"1776610043174-ovqvz","severity":"high","reason":"Possible fall detected by motion sensor (confidence 71%)"}
 {"ts":1776610177484,"sessionId":"1776610043174-ovqvz","severity":"high","reason":"Patient has fallen — immediate response needed"}
 {"ts":1776610590996,"sessionId":"1776610505061-uui4o","severity":"medium","reason":"[Transcript] Patient is asking for help: \"Uh can you help me remember another memory?\""}
+{"ts":1776616840968,"sessionId":"1776616822042-4wlx5","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776617196295,"sessionId":"1776617137386-0jmg4","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776618128839,"sessionId":"1776617976075-sudb4","severity":"high","reason":"Possible fall detected (65% confidence)"}
+{"ts":1776618161339,"sessionId":"1776617976075-sudb4","severity":"high","reason":"Possible fall detected (65% confidence)"}
+{"ts":1776618250239,"sessionId":"1776618205265-q4q88","severity":"medium","reason":"Sam expressed confusion about his location and seems disoriented."}
+{"ts":1776618261407,"sessionId":"1776618205265-q4q88","severity":"medium","reason":"[Transcript] Patient is asking for help: \"Wait, how did I get here? Uh can you let me can you help me navigate?\""}
+{"ts":1776618410030,"sessionId":"1776618395599-uwbtn","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776618458791,"sessionId":"1776618440273-xr8zq","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776618465661,"sessionId":"1776618440273-xr8zq","severity":"medium","reason":"[Transcript] Patient reports dizziness: \"a little dizzy.\""}
+{"ts":1776618503818,"sessionId":"1776618499908-bsxb3","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776618599859,"sessionId":"1776618589718-ww4jn","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776618602263,"sessionId":"1776618589718-ww4jn","severity":"high","reason":"Patient has fallen — immediate response needed"}
+{"ts":1776618649169,"sessionId":"1776618644928-i82cv","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776618690938,"sessionId":"1776618670999-negi9","severity":"medium","reason":"Patient appears to be lying down — position monitoring active"}
+{"ts":1776618801989,"sessionId":"1776618783695-oksgc","severity":"medium","reason":"[Transcript] Patient appears disoriented: \"Hey, where am I?\""}
