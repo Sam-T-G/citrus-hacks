@@ -6,14 +6,16 @@ import { AlertScreen }           from './screens/Alert';
 import { DesktopCompanionShell } from './DesktopShell';
 import { OwlGlyph }              from './ui';
 import { usePatientData }        from './PatientContext';
+import { SessionLog }            from '../ui/SessionLog';
 import './companion.css';
 
-type MobileScreen = 'home' | 'profile' | 'memories' | 'alert';
+type MobileScreen = 'home' | 'profile' | 'memories' | 'log' | 'alert';
 
 const TABS: { id: MobileScreen; label: string }[] = [
   { id: 'home',     label: 'Today' },
   { id: 'profile',  label: 'Profile' },
   { id: 'memories', label: 'Memories' },
+  { id: 'log',      label: 'Care Log' },
 ];
 
 function useIsDesktop() {
@@ -76,6 +78,11 @@ export function CompanionApp() {
         {screen === 'home'     && <HomeScreen     onAlert={() => setScreen('alert')} />}
         {screen === 'profile'  && <ProfileScreen  />}
         {screen === 'memories' && <MemoriesScreen />}
+        {screen === 'log'      && (
+          <div style={{ padding: '0 0 24px' }}>
+            <SessionLog />
+          </div>
+        )}
         {screen === 'alert'    && <AlertScreen    onBack={() => setScreen('home')} />}
       </div>
     </div>

@@ -3,15 +3,18 @@ import { logService } from '../services/LogService';
 import type {
   SessionEvent, MoodObservationData,
   BehaviorEventData, CaregiverAlertData, MedicationEventData,
+  ConversationTurnData, VisualObservationData,
 } from '../types';
 
 const EVENT_META: Record<string, { icon: string; label: string; color: string }> = {
-  mood_observation: { icon: '◉', label: 'Mood',      color: 'var(--blue)'  },
-  behavior_event:   { icon: '⚑', label: 'Behaviour', color: 'var(--amber)' },
-  caregiver_alert:  { icon: '⚠', label: 'Alert',     color: 'var(--red)'   },
-  medication_event: { icon: '⬡', label: 'Medication', color: 'var(--violet)' },
-  session_start:    { icon: '▶', label: 'Session',   color: 'var(--green)' },
-  session_end:      { icon: '■', label: 'Session',   color: 'var(--text-muted)' },
+  mood_observation:    { icon: '◉', label: 'Mood',        color: 'var(--blue)'       },
+  behavior_event:      { icon: '⚑', label: 'Behaviour',   color: 'var(--amber)'      },
+  caregiver_alert:     { icon: '⚠', label: 'Alert',       color: 'var(--red)'        },
+  medication_event:    { icon: '⬡', label: 'Medication',  color: 'var(--violet)'     },
+  conversation_turn:   { icon: '◎', label: 'Transcript',  color: 'var(--ink-2)'      },
+  visual_observation:  { icon: '◈', label: 'Visual',      color: 'var(--sage-deep)'  },
+  session_start:       { icon: '▶', label: 'Session',     color: 'var(--green)'      },
+  session_end:         { icon: '■', label: 'Session',     color: 'var(--text-muted)' },
 };
 
 function eventSummary(e: SessionEvent): string {
@@ -31,6 +34,16 @@ function eventSummary(e: SessionEvent): string {
     case 'medication_event': {
       const d = e.data as MedicationEventData;
       return `${d.action}${d.notes ? ` — ${d.notes}` : ''}`;
+    }
+    case 'conversation_turn': {
+      const d = e.data as ConversationTurnData;
+      const who = d.role === 'assistant' ? 'Mira' : 'Patient';
+      const snippet = d.text.length > 100 ? d.text.slice(0, 97) + '…' : d.text;
+      return `${who}: "${snippet}"`;
+    }
+    case 'visual_observation': {
+      const d = e.data as VisualObservationData;
+      return `${d.emotion_hint} — ${d.description}`;
     }
     case 'session_start': return 'Session started';
     case 'session_end':   return 'Session ended';

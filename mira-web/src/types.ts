@@ -42,6 +42,8 @@ export type SessionEventType =
   | 'behavior_event'
   | 'caregiver_alert'
   | 'medication_event'
+  | 'conversation_turn'
+  | 'visual_observation'
   | 'session_start'
   | 'session_end';
 
@@ -66,10 +68,20 @@ export interface MedicationEventData {
   notes?: string;
 }
 
+export interface ConversationTurnData {
+  role: 'user' | 'assistant';
+  text: string;
+}
+
+export interface VisualObservationData {
+  description: string;
+  emotion_hint: string;
+}
+
 export interface SessionEvent {
   id:        string;          // uuid-lite: ts+random
   ts:        number;          // unix ms
   sessionId: string;
   type:      SessionEventType;
-  data:      MoodObservationData | BehaviorEventData | CaregiverAlertData | MedicationEventData | Record<string, unknown>;
+  data:      MoodObservationData | BehaviorEventData | CaregiverAlertData | MedicationEventData | ConversationTurnData | VisualObservationData | Record<string, unknown>;
 }

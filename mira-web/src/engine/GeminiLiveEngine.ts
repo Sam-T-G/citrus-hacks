@@ -18,7 +18,8 @@ import { AudioPlayer }    from '../audio/AudioPlayer';
 import { MicCapture }     from '../audio/MicCapture';
 import { CameraCapture }  from '../vision/CameraCapture';
 import { VisionPipeline } from '../vision/VisionPipeline';
-import { logService }     from '../services/LogService';
+import { logService }          from '../services/LogService';
+import { notificationService } from '../services/NotificationService';
 import { GEMINI_API_KEY, GEMINI_MODEL, GEMINI_VOICE, SYSTEM_PROMPT } from '../config';
 import type {
   ArduinoCommand, FaceType,
@@ -198,40 +199,44 @@ export interface EngineCallbacks {
   onArduinoCommand:     (cmd: ArduinoCommand)      => void;
   onCaregiverAlert:     (severity: AlertSeverity, reason: string) => void;
   onVisualObservation?: (obs: GeminiObservation)   => void;
+  onFacePan?:           (pixelX: number)           => void;
+  onAmbientCue?:        (cue: string, conf: number) => void;
   onError:              (error: Error)             => void;
 }
 
 // How long of silence before Mira considers proactive engagement
-const VISUAL_CHECK_SILENCE_MS  = 20_000;
+const VISUAL_CHECK_SILENCE_MS  = 60_000; // 60s — person already tracked, don't rush
 // How often to poll for the silence check
-const VISUAL_CHECK_POLL_MS     = 6_000;
+const VISUAL_CHECK_POLL_MS     = 15_000;
 // Minimum gap between proactive engagements so Mira isn't chatty
-const VISUAL_CHECK_COOLDOWN_MS = 45_000;
-// How often the background safety scan fires
-const SAFETY_SCAN_INTERVAL_MS  = 30_000;
+const VISUAL_CHECK_COOLDOWN_MS = 120_000;
+// How often the background safety scan fires (only backs up real-time onSafetyConcern)
+const SAFETY_SCAN_INTERVAL_MS  = 120_000;
 // Minimum time between repeated safety alerts
-const SAFETY_ALERT_COOLDOWN_MS = 30_000;
+const SAFETY_ALERT_COOLDOWN_MS = 60_000;
 // Minimum gap between ANY injected text turn — prevents overriding live audio input
-const MIN_PROMPT_GAP_MS        = 12_000;
+const MIN_PROMPT_GAP_MS        = 45_000;
 // Don't inject text turns if user spoke within this window
-const USER_ACTIVE_WINDOW_MS    = 8_000;
+const USER_ACTIVE_WINDOW_MS    = 20_000;
+// Buffer after Gemini finishes speaking before we can inject anything
+const POST_SPEAKING_BUFFER_MS  = 8_000;
 
 // Proactive engagement — fires after sustained silence.
 // Context is prepended automatically by _sendSystemPrompt.
 const VISUAL_CHECK_PROMPT = `\
-[SYSTEM: COMPANION CHECK]
-Some time has passed. Look at the camera now and call report_visual_state with what you see.
+[SYSTEM: COMPANION CHECK — person is in view]
+Someone is present. Look at the camera now and call report_visual_state with what you see.
 
-Based on the session context above and what you observe right now, decide:
-- If she looks happy or engaged — acknowledge it warmly, one sentence.
-- If she looks calm but quiet — offer a gentle conversational opener, one sentence.
-- If she looks confused or unsettled — orient softly, log_mood_observation, one sentence.
-- If she looks distressed — respond with immediate warmth, log_mood_observation + alert_caregiver(medium).
-- If you see wandering signals (coat on, near the door, keys) — redirect, log_behavior_event(wandering_attempt) + alert_caregiver(high).
-- If she appears to have fallen — respond immediately per your training.
+Then engage them — do not stay silent. One warm sentence is always the right call.
+Choose your response based on what you observe:
+- Calm or quiet → gentle opener: ask about their day, bring up a memory, offer warmth.
+- Happy or animated → match their energy, reflect their mood back.
+- Confused or looking around → orient softly, log_mood_observation(confused).
+- Distressed → immediate warmth, log_mood_observation + alert_caregiver(medium).
+- Wandering signals (coat, door, keys) → redirect, log_behavior_event(wandering_attempt) + alert_caregiver(high).
+- On the floor → act immediately per your training.
 
-Default to gentle engagement. Silence is worse than a brief warm check-in.
-Always set_face before speaking.`.trim();
+set_face before speaking. Silence when someone is present is never the right choice.`.trim();
 
 // Background safety scan — fires every 30s. Silent unless critical.
 const SAFETY_SCAN_PROMPT = `\
@@ -292,6 +297,10 @@ export class GeminiLiveEngine {
   private vision:  VisionPipeline;
   private systemPrompt: string;
 
+  // Track ownership so stop() knows whether to release camera/vision or just pause them
+  private readonly ownsCamera: boolean;
+  private readonly ownsVision: boolean;
+
   private transcriptBuf:    string[] = [];
   private userSpeechBuf:    string[] = [];
   private speaking          = false;
@@ -301,51 +310,47 @@ export class GeminiLiveEngine {
   private lastTextPrompt    = 0;
   private lastSafetyAlert   = 0;
   private lastEngagement    = 0;
-  private lastCueBlock      = '[No visual cues yet]';
+  private lastSpeakingEnd   = 0;
+  private lastCueBlock         = '[No visual cues yet]';
   private visualCheckTimer: ReturnType<typeof setInterval> | null = null;
   private safetyTimer:      ReturnType<typeof setInterval> | null = null;
+  private horizontalTimer:  ReturnType<typeof setInterval> | null = null;
   private observations:     GeminiObservation[] = [];
   private triggerCooldowns: Record<string, number> = {};
+  private lastKeywordAlert  = 0;
+  // Sustained-horizontal tracking
+  private horizontalStartTs: number | null = null;
+  private lastHorizontalSeen = 0;
+  private lastHorizontalEscalation = 0;
 
   // Rolling session context — feeds continuity into every injected prompt
   private contextLog: Array<{ ts: number; tag: string; content: string }> = [];
-  private readonly CTX_WINDOW_MS  = 150_000; // 2.5 min rolling window
-  private readonly CTX_MAX        = 18;
+  private readonly CTX_WINDOW_MS  = 120_000;
+  private readonly CTX_MAX        = 12;
 
-  constructor(private cb: EngineCallbacks, systemPrompt?: string) {
-    this.ai           = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-    this.player       = new AudioPlayer();
-    this.mic          = new MicCapture();
-    this.camera       = new CameraCapture();
-    this.vision       = new VisionPipeline({
-      onCue: (cue, conf) => {
-        if (!this.session || !this.running) return;
-        this._handleTriggerCue(cue, conf);
-      },
-      onSafetyConcern: (cue, conf) => {
-        if ((Date.now() - this.lastSafetyAlert) < SAFETY_ALERT_COOLDOWN_MS) return;
-        this.lastSafetyAlert = Date.now();
-        if (cue === 'fall_suspected' || cue === 'body_horizontal') {
-          // Priority=true — fall alerts bypass the normal prompt gap
-          this._sendSystemPrompt(TRIGGER_FLOOR(cue, conf), true);
-          return;
-        }
-        const block = this.vision.flushCueBlock();
-        this.lastCueBlock = block;
-        this._sendSystemPrompt(_buildEnrichedSafetyPrompt(block, cue, conf), true);
-      },
-      onStateUpdate: (state, block) => {
-        this.lastCueBlock = block;
-        // Log the social state snapshot to context for continuity
-        if (state !== 'neutral') {
-          this._addContext('MediaPipe state', state);
-        }
-        // Nudge Gemini for concerning states (gated by _sendSystemPrompt)
-        if (state === 'concerned' || state === 'disengaged') {
-          this._sendSystemPrompt(_buildEnrichedVisualCheck(block));
-        }
-      },
-    });
+  /**
+   * @param sharedCamera  Pre-opened CameraCapture from SessionContext (for pan tracking).
+   *                      If omitted, the engine opens its own camera.
+   * @param sharedVision  Pre-started VisionPipeline from SessionContext.
+   *                      If omitted, the engine creates its own.
+   *                      When provided, Gemini callbacks are swapped in on start()
+   *                      and restored to pan-only on stop().
+   */
+  constructor(
+    private cb: EngineCallbacks,
+    systemPrompt?: string,
+    sharedCamera?: CameraCapture,
+    sharedVision?: VisionPipeline,
+  ) {
+    this.ai     = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+    this.player = new AudioPlayer();
+    this.mic    = new MicCapture();
+
+    this.ownsCamera = !sharedCamera;
+    this.ownsVision = !sharedVision;
+
+    this.camera = sharedCamera ?? new CameraCapture();
+    this.vision = sharedVision ?? new VisionPipeline(this._buildVisionCallbacks());
     this.systemPrompt = systemPrompt ?? SYSTEM_PROMPT;
   }
 
@@ -353,6 +358,87 @@ export class GeminiLiveEngine {
   get visionPipeline(): VisionPipeline { return this.vision; }
   get recentObservations(): GeminiObservation[] { return this.observations; }
   get isRunning():     boolean       { return this.running; }
+
+  /** Builds the full set of VisionPipeline callbacks for an active Gemini session. */
+  private _buildVisionCallbacks() {
+    return {
+      onCue: (cue: string, conf: number) => {
+        if (!this.session || !this.running) return;
+        this._handleTriggerCue(cue, conf);
+      },
+      onSafetyConcern: (cue: string, conf: number) => {
+        this._handleSafetyConcern(cue, conf);
+      },
+      onStateUpdate: (state: import('../vision/vision-constants').SocialState, block: string) => {
+        this.lastCueBlock = block;
+        if (state !== 'neutral') this._addContext('MediaPipe state', state);
+      },
+      onFacePan: (px: number) => { this.cb.onFacePan?.(px); },
+    };
+  }
+
+  /** Pan-only callbacks — used when no Gemini session is active. */
+  private _buildPanOnlyCallbacks() {
+    return {
+      onCue:           () => {},
+      onSafetyConcern: (cue: string, conf: number) => { this._handleSafetyConcern(cue, conf); },
+      onStateUpdate:   () => {},
+      onFacePan: (px: number) => { this.cb.onFacePan?.(px); },
+    };
+  }
+
+  /**
+   * Deterministic safety handler — fires immediately on any safety cue,
+   * independent of Gemini's response time or availability.
+   *
+   * Covers:
+   *   fall_suspected   → high alert immediately
+   *   body_horizontal  → medium alert immediately; escalates to high after 2 min sustained
+   *   other safety cues → medium alert
+   *
+   * Also triggers Gemini visual verification (priority=true) when a session is active.
+   */
+  private _handleSafetyConcern(cue: string, conf: number): void {
+    const now = Date.now();
+    const isFall       = cue === 'fall_suspected';
+    const isHorizontal = cue === 'body_horizontal';
+
+    // Track sustained horizontal
+    if (isHorizontal) {
+      this.lastHorizontalSeen = now;
+      if (this.horizontalStartTs === null) this.horizontalStartTs = now;
+    } else {
+      // Non-horizontal safety cue — reset horizontal timer
+      this.horizontalStartTs = null;
+    }
+
+    // Cooldown gate for direct alert (shorter than the Gemini prompt gate)
+    if (now - this.lastSafetyAlert < 30_000) return;
+    this.lastSafetyAlert = now;
+
+    const severity = isFall ? 'high' : 'medium';
+    const reason   = isFall
+      ? `Possible fall detected by motion sensor (confidence ${(conf * 100).toFixed(0)}%)`
+      : isHorizontal
+        ? 'Patient appears to be lying down — position monitoring active'
+        : `Safety concern detected: ${cue.replace(/_/g, ' ')} (${(conf * 100).toFixed(0)}%)`;
+
+    logService.alert({ severity, reason });
+    notificationService.notify(severity, reason, `mira-safety-${cue}`);
+    this.cb.onCaregiverAlert(severity, reason);
+    this._addContext('Safety', `${severity.toUpperCase()} — ${reason}`);
+
+    // Also ask Gemini to visually verify when a session is active
+    if (this.session && this.running) {
+      if (isFall || isHorizontal) {
+        this._sendSystemPrompt(TRIGGER_FLOOR(cue, conf), true);
+      } else {
+        const block = this.vision.flushCueBlock();
+        this.lastCueBlock = block;
+        this._sendSystemPrompt(_buildEnrichedSafetyPrompt(block, cue, conf), true);
+      }
+    }
+  }
 
   private _addContext(tag: string, content: string): void {
     const now = Date.now();
@@ -382,8 +468,9 @@ export class GeminiLiveEngine {
     if (!this.session || !this.running) return false;
     if (this.speaking) return false;
     const now = Date.now();
-    if (!priority && now - this.lastUserSpeech < USER_ACTIVE_WINDOW_MS) return false;
-    if (!priority && now - this.lastTextPrompt  < MIN_PROMPT_GAP_MS)    return false;
+    if (!priority && now - this.lastSpeakingEnd < POST_SPEAKING_BUFFER_MS) return false;
+    if (!priority && now - this.lastUserSpeech  < USER_ACTIVE_WINDOW_MS)  return false;
+    if (!priority && now - this.lastTextPrompt  < MIN_PROMPT_GAP_MS)      return false;
     this.lastTextPrompt = now;
     const fullText = this._buildSessionContext() + text;
     this.session.sendClientContent({
@@ -402,23 +489,94 @@ export class GeminiLiveEngine {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private _handleTriggerCue(cue: string, _conf: number): void {
+    if (cue === 'person_detected') return;
     const now = Date.now();
     const COOLDOWNS: Record<string, number> = {
-      approach_detected:       60_000, // greet at most once per minute
+      approach_detected:       30_000, // greet at most once per 30s
       looking_around_confused: 30_000, // confusion check at most every 30s
     };
     const cooldownMs = COOLDOWNS[cue];
-    if (!cooldownMs) return; // not a trigger cue
+    if (!cooldownMs) {
+      this.cb.onAmbientCue?.(cue, _conf);
+      return;
+    }
     const lastFired = this.triggerCooldowns[cue] ?? 0;
     if (now - lastFired < cooldownMs) return;
     this.triggerCooldowns[cue] = now;
 
     if (cue === 'approach_detected') {
-      if (this.speaking) return; // never interrupt Gemini mid-sentence
-      this._sendTrigger(TRIGGER_APPROACH);
+      if (this.speaking) return;
+      this._sendApproach();
     } else if (cue === 'looking_around_confused') {
       if (this.speaking) return;
       this._sendTrigger(TRIGGER_CONFUSED_SCAN);
+    }
+  }
+
+  /** Fast-path for approach — skips MIN_PROMPT_GAP but still respects speaking buffer. */
+  private _sendApproach(): void {
+    if (!this.session || !this.running || this.speaking) return;
+    if (Date.now() - this.lastUserSpeech  < 3_000) return;
+    if (Date.now() - this.lastTextPrompt  < 3_000) return; // don't fire if greeting just sent
+    if (Date.now() - this.lastSpeakingEnd < POST_SPEAKING_BUFFER_MS) return;
+    const fullText = this._buildSessionContext() + TRIGGER_APPROACH;
+    this.session.sendClientContent({
+      turns: [{ role: 'user', parts: [{ text: fullText }] }],
+      turnComplete: true,
+    });
+    this.lastTextPrompt  = Date.now();
+    this.lastEngagement  = Date.now();
+    this.lastActivityTime = Date.now();
+    // Wave to physically greet — goes directly through Arduino command path
+    this.cb.onArduinoCommand({ wave: 1 });
+  }
+
+  /**
+   * Scans finalized user speech for concerning patterns as a deterministic safety
+   * net — independent of Gemini AI detection. Fires a medium alert with 3min cooldown.
+   * High-severity keywords (fall, chest pain, can't breathe) escalate immediately.
+   */
+  private _scanTranscriptForConcerns(text: string): void {
+    const t = text.toLowerCase();
+    const COOLDOWN_MS = 3 * 60_000;
+    if (Date.now() - this.lastKeywordAlert < COOLDOWN_MS) return;
+
+    const HIGH_PATTERNS = [
+      { re: /\b(fell|fall(ing)?|fallen|on the floor)\b/, reason: 'Patient may have fallen' },
+      { re: /\bchest (pain|hurts|tight)\b/,             reason: 'Patient reports chest pain' },
+      { re: /\bcan'?t breathe\b/,                        reason: 'Patient reports breathing difficulty' },
+      { re: /\b(unresponsive|not moving)\b/,             reason: 'Patient may be unresponsive' },
+    ];
+
+    const MEDIUM_PATTERNS = [
+      { re: /\b(help me|someone help|i need help)\b/,        reason: 'Patient is asking for help' },
+      { re: /\b(hurt(ing)?|in pain|it hurts)\b/,            reason: 'Patient reports pain' },
+      { re: /\b(scared|frightened|i'?m afraid)\b/,          reason: 'Patient reports fear or distress' },
+      { re: /\b(where am i|don'?t know where|lost)\b/,      reason: 'Patient appears disoriented' },
+      { re: /\b(dizzy|spinning|can'?t stand)\b/,            reason: 'Patient reports dizziness' },
+      { re: /\b(nausea|feel sick|going to be sick)\b/,      reason: 'Patient reports nausea' },
+      { re: /\b(confused|don'?t (understand|know))\b/,      reason: 'Patient expressing confusion' },
+    ];
+
+    for (const p of HIGH_PATTERNS) {
+      if (p.re.test(t)) {
+        this.lastKeywordAlert = Date.now();
+        this.lastSafetyAlert  = Date.now();
+        logService.alert({ severity: 'high', reason: `[Transcript] ${p.reason}: "${text.slice(0, 120)}"` });
+        notificationService.notify('high', `${p.reason} — heard in conversation`, 'mira-transcript-alert');
+        this.cb.onCaregiverAlert('high', `${p.reason}: "${text.slice(0, 100)}"`);
+        return;
+      }
+    }
+
+    for (const p of MEDIUM_PATTERNS) {
+      if (p.re.test(t)) {
+        this.lastKeywordAlert = Date.now();
+        logService.alert({ severity: 'medium', reason: `[Transcript] ${p.reason}: "${text.slice(0, 120)}"` });
+        notificationService.notify('medium', `${p.reason} — heard in conversation`, 'mira-transcript-concern');
+        this.cb.onCaregiverAlert('medium', `${p.reason}: "${text.slice(0, 100)}"`);
+        return;
+      }
     }
   }
 
@@ -426,6 +584,12 @@ export class GeminiLiveEngine {
     this.running = true;
     this.player.resume();
     logService.startSession();
+
+    // If using a shared VisionPipeline, activate Gemini callbacks now.
+    // The detection loop is already running — callbacks are swapped in-place.
+    if (!this.ownsVision) {
+      this.vision.setCallbacks(this._buildVisionCallbacks());
+    }
 
     // Initialize MediaPipe vision models (loads from CDN, non-blocking for Gemini connect)
     this.vision.init().catch(e => console.warn('[VisionPipeline] init failed:', e));
@@ -460,6 +624,8 @@ export class GeminiLiveEngine {
 
   async injectGreeting(text: string): Promise<void> {
     if (!this.session) return;
+    this.lastTextPrompt  = Date.now(); // block approach from firing alongside greeting
+    this.lastEngagement  = Date.now();
     await this.session.sendClientContent({
       turns: [{ role: 'user', parts: [{ text }] }],
       turnComplete: true,
@@ -476,12 +642,29 @@ export class GeminiLiveEngine {
       clearInterval(this.safetyTimer);
       this.safetyTimer = null;
     }
-    this.vision.stop();
+    if (this.horizontalTimer !== null) {
+      clearInterval(this.horizontalTimer);
+      this.horizontalTimer = null;
+    }
+
     this.mic.stop();
-    this.camera.stop();
     this.player.interrupt();
     this.session?.close();
     this.session = null;
+
+    if (this.ownsCamera) {
+      this.camera.stop();
+    } else {
+      // Shared camera: stop sending frames to Gemini but keep the stream alive for tracking
+      this.camera.stopFrames();
+    }
+
+    if (this.ownsVision) {
+      this.vision.stop();
+    } else {
+      // Shared vision: restore pan-only callbacks so tracking continues without a session
+      this.vision.setCallbacks(this._buildPanOnlyCallbacks());
+    }
   }
 
   private _startStreaming(): void {
@@ -494,19 +677,27 @@ export class GeminiLiveEngine {
       });
     });
 
-    this.camera.start((base64jpeg) => {
+    const frameCallback = (base64jpeg: string) => {
       if (!this.session || !this.running) return;
       this.session.sendRealtimeInput({
         video: { data: base64jpeg, mimeType: 'image/jpeg' },
       });
-    }, 1);
+    };
 
-    // Start MediaPipe pipeline on the same video element (share the stream, no second camera open)
+    if (this.ownsCamera) {
+      // Engine owns camera — open stream and start JPEG delivery
+      this.camera.start(frameCallback, 1);
+    } else {
+      // Shared camera already streaming — just add JPEG sender on top
+      this.camera.startFrames(frameCallback, 1);
+    }
+
+    // Start MediaPipe on the video element.
+    // If vision is already running (shared), start() is a no-op — the loop continues.
     const videoEl = this.camera.getVideoElement();
     if (videoEl) {
       this.vision.start(videoEl);
     } else {
-      // Camera may not be ready yet — wait for next tick
       setTimeout(() => {
         const el = this.camera.getVideoElement();
         if (el) this.vision.start(el);
@@ -514,10 +705,12 @@ export class GeminiLiveEngine {
     }
 
     // Proactive engagement: fires after sustained silence.
+    // Threshold is shorter when someone is visibly present in frame.
     this.visualCheckTimer = setInterval(() => {
-      const silentMs   = Date.now() - this.lastActivityTime;
-      const cooldownOk = (Date.now() - this.lastEngagement) > VISUAL_CHECK_COOLDOWN_MS;
-      if (silentMs < VISUAL_CHECK_SILENCE_MS || !cooldownOk) return;
+      const silentMs       = Date.now() - this.lastActivityTime;
+      const cooldownOk     = (Date.now() - this.lastEngagement) > VISUAL_CHECK_COOLDOWN_MS;
+      const silenceNeeded  = VISUAL_CHECK_SILENCE_MS;
+      if (silentMs < silenceNeeded || !cooldownOk) return;
       const block = this.vision.flushCueBlock();
       this.lastCueBlock = block;
       const text = block === '[No visual cues detected]'
@@ -539,6 +732,31 @@ export class GeminiLiveEngine {
         : `${SAFETY_SCAN_PROMPT}\n\nMediaPipe context:\n${cueBlock}`;
       this._sendSystemPrompt(text);
     }, SAFETY_SCAN_INTERVAL_MS);
+
+    // Sustained-horizontal escalation: if person stays horizontal for 2+ minutes, escalate to high.
+    // Checks every 20s; resets start time if horizontal signal went silent > 10s ago.
+    this.horizontalTimer = setInterval(() => {
+      const now = Date.now();
+      // Reset if we haven't seen the horizontal cue recently
+      if (this.horizontalStartTs !== null && now - this.lastHorizontalSeen > 10_000) {
+        this.horizontalStartTs = null;
+        return;
+      }
+      if (this.horizontalStartTs === null) return;
+      const sustainedMs = now - this.horizontalStartTs;
+      if (sustainedMs < 120_000) return; // < 2 min — not yet alarming
+      if (now - this.lastHorizontalEscalation < 120_000) return; // already escalated recently
+      this.lastHorizontalEscalation = now;
+      const minutes = Math.round(sustainedMs / 60_000);
+      const reason = `Patient has been lying down for ${minutes} minute${minutes !== 1 ? 's' : ''} without movement`;
+      logService.alert({ severity: 'high', reason });
+      notificationService.notify('high', reason, 'mira-sustained-horizontal');
+      this.cb.onCaregiverAlert('high', reason);
+      this._addContext('Safety', `SUSTAINED HORIZONTAL ${minutes}min`);
+      if (this.session && this.running) {
+        this._sendSystemPrompt(TRIGGER_FLOOR('body_horizontal', 0.9), true);
+      }
+    }, 20_000);
   }
 
   private _handleMessage(msg: unknown): void {
@@ -548,7 +766,7 @@ export class GeminiLiveEngine {
     // ── Tool calls ────────────────────────────────────────────
     const toolCall = m?.toolCall;
     if (toolCall?.functionCalls?.length) {
-      const responses: { id: string; response: { output: unknown } }[] = [];
+      const responses: { id: string; name: string; response: { output: unknown } }[] = [];
 
       for (const call of toolCall.functionCalls) {
         const args = call.args ?? {};
@@ -558,12 +776,16 @@ export class GeminiLiveEngine {
           // Owl body
           case 'set_face': {
             const face = args.face;
+            console.log('[Mira] set_face →', face);
             if (typeof face === 'string' && VALID_FACES.has(face)) {
               this.cb.onArduinoCommand({ face: face as FaceType });
+            } else {
+              console.warn('[Mira] set_face received unknown face:', face);
             }
             break;
           }
           case 'wave_wing':
+            console.log('[Mira] wave_wing');
             this.cb.onArduinoCommand({ wave: 1 });
             break;
 
@@ -599,7 +821,7 @@ export class GeminiLiveEngine {
             break;
 
           case 'get_time_context':
-            output = timeContextPayload();
+            output = JSON.stringify(timeContextPayload());
             break;
 
           case 'report_visual_state': {
@@ -611,11 +833,13 @@ export class GeminiLiveEngine {
             this.observations = [...this.observations.slice(-29), obs];
             this.cb.onVisualObservation?.(obs);
             this._addContext('Visual', `${obs.emotionHint} — ${obs.description}`);
+            logService.visual({ description: obs.description, emotion_hint: obs.emotionHint });
             break;
           }
         }
 
-        responses.push({ id: call.id, response: { output } });
+        const safeOutput = (output !== null && typeof output === 'object') ? JSON.stringify(output) : output;
+        responses.push({ id: call.id, name: call.name, response: { output: safeOutput } });
       }
 
       this.session?.sendToolResponse({ functionResponses: responses });
@@ -669,9 +893,13 @@ export class GeminiLiveEngine {
         if (said) {
           const snippet = said.length > 100 ? said.substring(0, 97) + '…' : said;
           this._addContext('Patient said', snippet);
+          this._scanTranscriptForConcerns(said);
         }
       }
       if (this.speaking) { this.speaking = false; this.cb.onSpeakingEnd(); }
+      // Reset activity clock — prevents visual check from firing right after Gemini speaks
+      this.lastSpeakingEnd  = Date.now();
+      this.lastActivityTime = Date.now();
       if (this.transcriptBuf.length > 0) {
         const full = this.transcriptBuf.join('').trim();
         this.transcriptBuf = [];

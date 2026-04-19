@@ -1,68 +1,184 @@
+#!/usr/bin/env python3
+"""
+Mira Bridge — terminal script that owns the Arduino serial port.
 
-import cv2
-import serial
+Responsibilities:
+  1. OpenCV face tracking  →  sends "pan:X\n" to Arduino for head rotation
+  2. WebSocket server      →  mira-web connects here instead of Web Serial;
+                               face/wave commands are relayed to Arduino
+
+Usage:
+  python3 "Terminal Code"
+
+  Then in mira-web, click "Connect Bridge" (ws://localhost:8765) instead of
+  "Connect Serial". Both AI face expressions and pan tracking work
+  simultaneously through this single serial connection.
+
+Requirements:
+  pip install pyserial opencv-python websockets
+
+Note (macOS): OpenCV AVFoundation requires the camera on the main thread.
+  The WebSocket server therefore runs in a background thread.
+"""
+
+import asyncio
+import threading
 import time
+import serial
+import serial.tools.list_ports
+import cv2
+import websockets
 
-ser = serial.Serial('/dev/cu.usbmodem101', 9600)
-time.sleep(2)
-face_cascade = cv2.CascadeClassifier(
-        
-    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
-)       
-        
-cap = cv2.VideoCapture(0)
-cap.set(3, 320)
-cap.set(4, 240)
-            
-smooth_x = 0
-alpha = 0.2
-prev_x = 0
-    
-while True:
-    ret, frame = cap.read()
-    
-    
-    if not ret:
-        
-        print("Camera failed")
-    
-        break
+# ── Config ────────────────────────────────────────────────────────────────────
+SERIAL_PORT  = '/dev/cu.usbmodem1101'  # update to match your Arduino port
+BAUD_RATE    = 9600
+WS_HOST      = 'localhost'
+WS_PORT      = 8765
+CAM_WIDTH    = 320
+CAM_HEIGHT   = 240
+PAN_ALPHA    = 0.2  # smoothing (0 = no smoothing, 1 = instant)
+PAN_DEADZONE = 5    # min pixel change before sending a pan update
 
+# ── Serial ────────────────────────────────────────────────────────────────────
+_ser = None
+_ser_lock = threading.Lock()
 
+def connect_serial():
+    global _ser
+    try:
+        _ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+        time.sleep(2)  # wait for Arduino reset after DTR pulse
+        print(f"[serial] connected → {SERIAL_PORT} @ {BAUD_RATE} baud")
+        return True
+    except serial.SerialException as e:
+        print(f"[serial] failed: {e}")
+        print("[serial] available ports:")
+        for p in serial.tools.list_ports.comports():
+            print(f"  {p.device}  —  {p.description}")
+        return False
 
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+def send_cmd(cmd):
+    with _ser_lock:
+        if _ser and _ser.is_open:
+            _ser.write(f"{cmd}\n".encode())
 
-    faces = face_cascade.detectMultiScale(gray, 1.1, 3)
+# ── WebSocket server (runs in background thread) ──────────────────────────────
+_current_face = "plain"
+_connected_clients = set()
 
+async def ws_handler(websocket):
+    global _current_face
+    _connected_clients.add(websocket)
+    addr = websocket.remote_address
+    print(f"[ws] client connected  {addr}")
+    try:
+        async for message in websocket:
+            cmd = message.strip()
+            if not cmd:
+                continue
+            print(f"[ws] → arduino: {cmd}")
+            if cmd != "wave":
+                _current_face = cmd
+            send_cmd(cmd)
+            await websocket.send("ok")
+    except websockets.exceptions.ConnectionClosed:
+        pass
+    finally:
+        _connected_clients.discard(websocket)
+        print(f"[ws] client disconnected  {addr}")
 
+async def _ws_main():
+    async with websockets.serve(ws_handler, WS_HOST, WS_PORT):
+        print(f"[ws] listening on ws://{WS_HOST}:{WS_PORT}")
+        await asyncio.Future()
 
-    for (x, y, w, h) in faces:
+def ws_thread():
+    asyncio.run(_ws_main())
 
-        cx = x + w // 2
+# ── Face tracking — MUST run on main thread on macOS ─────────────────────────
+def run_face_tracking():
+    import os
+    os.environ.setdefault("OPENCV_AVFOUNDATION_SKIP_AUTH", "0")
 
-        # smoothing
+    cascade = cv2.CascadeClassifier(
+        cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
+    )
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("[tracker] camera unavailable — pan tracking disabled, WS bridge still running")
+        print("[tracker] press Ctrl-C to quit")
+        # Keep main thread alive so WS server (daemon thread) stays up
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            pass
+        return
 
-        smooth_x = int(alpha * cx + (1 - alpha) * smooth_x)
-        
-        # send only if changed enough
-        
-        if abs(smooth_x - prev_x) > 5:
-        
-            ser.write(f"{smooth_x}\n".encode())
-        
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH,  CAM_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT)
+
+    smooth_x = CAM_WIDTH // 2
+    prev_x   = -1
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("[tracker] camera read failed")
+            break
+
+        gray  = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=4,
+                                         minSize=(40, 40))
+
+        face_detected = len(faces) > 0
+
+        for (x, y, w, h) in faces:
+            cx       = x + w // 2
+            smooth_x = int(PAN_ALPHA * cx + (1 - PAN_ALPHA) * smooth_x)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 140, 0), 2)
+            cv2.circle(frame, (smooth_x, y + h // 2), 4, (0, 200, 255), -1)
+
+        if face_detected and abs(smooth_x - prev_x) > PAN_DEADZONE:
+            send_cmd(f"pan:{smooth_x}")
             prev_x = smooth_x
-        
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            
-    cv2.imshow("Tracking", frame)
-            
-            
-            
-    if cv2.waitKey(1) == 27:
-        
-        break
-        
-    time.sleep(0.02)
-cap.release()
-    
-cv2.destroyAllWindows()
+
+        tracking_label = "[tracking]" if face_detected else "[searching]"
+        hud = f"face:{_current_face}  pan:{smooth_x}  {tracking_label}"
+        cv2.putText(frame, hud, (5, CAM_HEIGHT - 8),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.42, (0, 255, 120), 1)
+        cv2.putText(frame, "Mira Bridge  |  ESC to quit", (5, 18),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.42, (200, 200, 200), 1)
+        cv2.imshow("Mira — Face Tracker", frame)
+
+        if cv2.waitKey(1) == 27:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+    print("[tracker] stopped")
+
+# ── Entry point ───────────────────────────────────────────────────────────────
+def main():
+    print("=" * 52)
+    print("  Mira Bridge")
+    print("=" * 52)
+
+    if not connect_serial():
+        print("\n[!] Serial unavailable — update SERIAL_PORT at the top.")
+        print("    WebSocket server will still run (useful for testing).\n")
+
+    # WebSocket server in background thread (asyncio event loop)
+    ws = threading.Thread(target=ws_thread, daemon=True)
+    ws.start()
+
+    print(f"\n  Serial   : {SERIAL_PORT} @ {BAUD_RATE} baud")
+    print(f"  WebSocket: ws://{WS_HOST}:{WS_PORT}")
+    print(f"\n  mira-web → Connect Bridge → ws://{WS_HOST}:{WS_PORT}")
+    print(f"  ESC in the tracker window to quit\n")
+
+    # Face tracking on main thread (required by macOS AVFoundation)
+    run_face_tracking()
+
+if __name__ == "__main__":
+    main()

@@ -1,8 +1,11 @@
+import { useEffect, useState } from 'react';
 import { OwlGlyph, Heartbeat, Card, OwlQuote, SectionHeader, Pill } from '../ui';
 import { LiveTranscript } from '../LiveTranscript';
 import { useSession } from '../../session/SessionContext';
 import { usePatientData, usePronouns } from '../PatientContext';
 import { cap } from '../pronouns';
+import { logService } from '../../services/LogService';
+import type { SessionEvent, ConversationTurnData, MoodObservationData, BehaviorEventData, CaregiverAlertData } from '../../types';
 
 const MOOD_COLORS = [
   'var(--rose-deep)', 'var(--rose)', 'var(--clay)', 'var(--sage)', 'var(--sage-deep)',
@@ -37,10 +40,39 @@ function moodSummary(moods: { d: string; mood: number; note: string | null }[]):
   return '';
 }
 
+function logEntryLine(e: SessionEvent): { time: string; kind: string; text: string } | null {
+  const time = new Date(e.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  switch (e.type) {
+    case 'conversation_turn': {
+      const d = e.data as ConversationTurnData;
+      if (d.role !== 'assistant') return null; // only show Mira's words in journal
+      const snippet = d.text.length > 120 ? d.text.slice(0, 117) + '…' : d.text;
+      return { time, kind: 'quote', text: snippet };
+    }
+    case 'mood_observation': {
+      const d = e.data as MoodObservationData;
+      return { time, kind: 'mood', text: `Mood: ${d.mood} (${d.intensity})${d.notes ? ` — ${d.notes}` : ''}` };
+    }
+    case 'behavior_event': {
+      const d = e.data as BehaviorEventData;
+      return { time, kind: 'behavior', text: d.event_type.replace(/_/g, ' ') + (d.notes ? ` — ${d.notes}` : '') };
+    }
+    case 'caregiver_alert': {
+      const d = e.data as CaregiverAlertData;
+      return { time, kind: 'alert', text: `Alert (${d.severity}): ${d.reason}` };
+    }
+    case 'session_start': return { time, kind: 'session', text: 'Session started' };
+    case 'session_end':   return { time, kind: 'session', text: 'Session ended' };
+    default: return null;
+  }
+}
+
 export function HomeScreen({ onAlert }: { onAlert: () => void }) {
-  const { engineState, transcript, liveUser, sessionActive, startSession, stopSession, connectSerial, serialStatus } = useSession();
+  const { engineState, transcript, liveUser, sessionActive, startSession, stopSession, connectSerial, connectBridge, serialStatus } = useSession();
   const { store, currentCaregiver } = usePatientData();
   const pr = usePronouns();
+  const [logEvents, setLogEvents] = useState<SessionEvent[]>([]);
+  useEffect(() => logService.subscribe(setLogEvents), []);
 
   const stateLabel = { idle: 'Offline', connecting: 'Connecting…', listening: 'Listening', speaking: 'Speaking' }[engineState] ?? engineState;
   const stateColor = { idle: 'var(--ink-4)', connecting: 'oklch(0.6 0.12 250)', listening: 'var(--sage-deep)', speaking: 'var(--clay-deep)' }[engineState] ?? 'var(--ink-4)';
@@ -52,7 +84,10 @@ export function HomeScreen({ onAlert }: { onAlert: () => void }) {
   const tod         = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
   const activity    = store ? currentRoutineActivity(store.patient.routine) : '';
   const moodNote    = store ? moodSummary(store.moods) : '';
-  const lastLogNote = store?.todayLog.filter(e => e.kind === 'share' || e.kind === 'topic' || e.kind === 'memory').slice(-1)[0]?.text ?? '';
+  const lastMiraQuote = logEvents
+    .filter(e => e.type === 'conversation_turn' && (e.data as ConversationTurnData).role === 'assistant')
+    .slice(-1)[0];
+  const lastQuoteText = lastMiraQuote ? (lastMiraQuote.data as ConversationTurnData).text : '';
 
   return (
     <div>
@@ -91,9 +126,10 @@ export function HomeScreen({ onAlert }: { onAlert: () => void }) {
           ? <Pill tone="ink" onClick={startSession}>Start session</Pill>
           : <Pill tone="rose" onClick={stopSession}>End session</Pill>
         }
-        {serialStatus === 'disconnected' && (
-          <Pill tone="default" onClick={connectSerial}>Connect Arduino</Pill>
-        )}
+        {serialStatus === 'disconnected' && (<>
+          <Pill tone="default" onClick={connectSerial}>Connect Serial</Pill>
+          <Pill tone="default" onClick={connectBridge}>Connect Bridge</Pill>
+        </>)}
         {sessionActive && <Pill tone="ghost" onClick={onAlert}>Simulate alert</Pill>}
       </div>
 
@@ -131,25 +167,37 @@ export function HomeScreen({ onAlert }: { onAlert: () => void }) {
         </Card>
       )}
 
-      {/* Owl's journal */}
-      <SectionHeader kicker="Owl's journal" action={<Pill tone="ghost">Today</Pill>}>
-        {sessionActive ? 'Earlier today' : 'What I said today'}
+      {/* Owl's journal — real log feed */}
+      <SectionHeader kicker="Owl's journal" action={<Pill tone="ghost">{logEvents.length} events</Pill>}>
+        {sessionActive ? 'Live session log' : 'Today\'s session log'}
       </SectionHeader>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {(store?.todayLog ?? []).map((e, i) => (
-          <div key={i} style={{
-            display: 'grid', gridTemplateColumns: '72px 1fr', gap: 14, padding: '14px 0',
-            borderBottom: i < (store?.todayLog.length ?? 0) - 1 ? '0.5px solid var(--hair-2)' : 'none',
-          }}>
-            <div style={{ fontFamily: 'var(--cmono)', fontSize: 10.5, color: 'var(--ink-3)', letterSpacing: '0.02em', paddingTop: 2 }}>{e.t}</div>
-            <div style={{ fontSize: 13.5, color: 'var(--ink-2)', lineHeight: 1.5 }}>
-              {e.kind === 'greet' || e.kind === 'music'
-                ? <span style={{ fontFamily: 'var(--cmono)', fontSize: 12.5, color: 'var(--ink)' }}>"{e.text}"</span>
-                : <span>{e.text}</span>
-              }
-            </div>
+        {logEvents.length === 0 && (
+          <div style={{ fontSize: 13, color: 'var(--ink-3)', padding: '16px 0', lineHeight: 1.5 }}>
+            No events yet. Start a session to begin logging.
           </div>
-        ))}
+        )}
+        {[...logEvents].reverse().map((e, i) => {
+          const line = logEntryLine(e);
+          if (!line) return null;
+          const isAlert = line.kind === 'alert';
+          const isQuote = line.kind === 'quote';
+          const items = logEvents.filter(x => logEntryLine(x) !== null);
+          return (
+            <div key={e.id} style={{
+              display: 'grid', gridTemplateColumns: '52px 1fr', gap: 14, padding: '13px 0',
+              borderBottom: i < items.length - 1 ? '0.5px solid var(--hair-2)' : 'none',
+            }}>
+              <div style={{ fontFamily: 'var(--cmono)', fontSize: 10, color: 'var(--ink-3)', letterSpacing: '0.02em', paddingTop: 2 }}>{line.time}</div>
+              <div style={{ fontSize: 13.5, color: isAlert ? 'var(--rose-deep)' : 'var(--ink-2)', lineHeight: 1.5 }}>
+                {isQuote
+                  ? <span style={{ fontStyle: 'italic', color: 'var(--ink)' }}>"{line.text}"</span>
+                  : <span>{line.text}</span>
+                }
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Mood pulse */}
@@ -178,10 +226,10 @@ export function HomeScreen({ onAlert }: { onAlert: () => void }) {
         )}
       </Card>
 
-      {/* Owl quote */}
-      {lastLogNote && (
+      {/* Last thing Mira said */}
+      {lastQuoteText && (
         <div style={{ margin: '28px 0 8px' }}>
-          <OwlQuote>{lastLogNote}</OwlQuote>
+          <OwlQuote>{lastQuoteText.length > 160 ? lastQuoteText.slice(0, 157) + '…' : lastQuoteText}</OwlQuote>
         </div>
       )}
     </div>

@@ -40,6 +40,7 @@ export interface VisionCallbacks {
   onCue:           (cue: string, confidence: number) => void;
   onSafetyConcern: (cue: string, confidence: number) => void;
   onStateUpdate:   (state: SocialState, cueBlock: string) => void;
+  onFacePan?:      (pixelX: number) => void; // 0–320, for Arduino pan servo
 }
 
 export class VisionPipeline {
@@ -57,6 +58,24 @@ export class VisionPipeline {
   private calibrating = 0;
   private initialized = false;
   private renderCallback: ((frame: RawVisionFrame) => void) | null = null;
+
+  // Pan tracking state — mirrors script.py smoothing logic
+  private panSmooth = 160; // start centered (320/2)
+  private panPrev   = -1;
+  private readonly PAN_ALPHA    = 0.2;
+  private readonly PAN_DEADZONE = 5;
+
+  get isInitialized(): boolean { return this.initialized; }
+  get isRunning():     boolean { return this.running; }
+
+  /**
+   * Swap the callback set at runtime.
+   * Used when a Gemini session starts/stops to add or remove conversation handlers
+   * without restarting the detection loop.
+   */
+  setCallbacks(cb: VisionCallbacks): void {
+    this.cb = cb;
+  }
 
   constructor(private cb: VisionCallbacks) {}
 
@@ -177,16 +196,32 @@ export class VisionPipeline {
         });
       }
 
-      if (result && result.cue !== 'person_detected') {
-        const { cue, score } = result;
-        const ts = Date.now();
-        this.cueBuffer.push({ ts, cue, conf: score });
+      // Pan tracking — nose tip x (landmark 4), normalized 0–1 → pixel 0–320
+      if (face && face.length > 4 && this.cb.onFacePan) {
+        const rawX    = face[4].x * 320;
+        this.panSmooth = this.PAN_ALPHA * rawX + (1 - this.PAN_ALPHA) * this.panSmooth;
+        const px = Math.round(this.panSmooth);
+        if (Math.abs(px - this.panPrev) > this.PAN_DEADZONE) {
+          this.panPrev = px;
+          this.cb.onFacePan(px);
+        }
+      } else if (!face) {
+        this.panPrev = -1; // reset on face loss so next detect emits immediately
+      }
 
-        // Safety cues — fire immediately, don't wait for the 8s flush
-        if (SAFETY_CUES.has(cue)) {
-          this.cb.onSafetyConcern(cue, score);
-        } else {
+      if (result) {
+        const { cue, score } = result;
+        if (cue === 'person_detected') {
+          // Person is present but idle — notify engine so it knows someone is in frame
           this.cb.onCue(cue, score);
+        } else {
+          const ts = Date.now();
+          this.cueBuffer.push({ ts, cue, conf: score });
+          if (SAFETY_CUES.has(cue)) {
+            this.cb.onSafetyConcern(cue, score);
+          } else {
+            this.cb.onCue(cue, score);
+          }
         }
       }
     }

@@ -9,6 +9,7 @@ import type {
   SessionEvent, SessionEventType,
   MoodObservationData, BehaviorEventData,
   CaregiverAlertData, MedicationEventData,
+  ConversationTurnData, VisualObservationData,
 } from '../types';
 
 const RING_SIZE = 200;
@@ -56,6 +57,14 @@ class LogService {
 
   medication(data: MedicationEventData): void {
     this._emit({ type: 'medication_event', data });
+  }
+
+  turn(data: ConversationTurnData): void {
+    this._emit({ type: 'conversation_turn', data });
+  }
+
+  visual(data: VisualObservationData): void {
+    this._emit({ type: 'visual_observation', data });
   }
 
   // ── Ring buffer subscribe ─────────────────────────────────

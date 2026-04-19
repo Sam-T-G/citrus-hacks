@@ -91,3 +91,112 @@
 {"id":"1776593578761-acpom","ts":1776593578761,"sessionId":"1776593578761-grxs0","type":"session_start","data":{}}
 {"id":"1776593590517-ruaip","ts":1776593590517,"sessionId":"1776593590517-kj6dk","type":"session_start","data":{}}
 {"id":"1776593604665-yvuyo","ts":1776593604665,"sessionId":"1776593590517-kj6dk","type":"session_end","data":{}}
+{"id":"1776593667862-377nq","ts":1776593667862,"sessionId":"1776593667862-xgibb","type":"session_start","data":{}}
+{"id":"1776593688146-e71k1","ts":1776593688146,"sessionId":"1776593667862-xgibb","type":"session_end","data":{}}
+{"id":"1776593693374-5tq5f","ts":1776593693374,"sessionId":"1776593693374-z1hem","type":"session_start","data":{}}
+{"id":"1776593755670-izivw","ts":1776593755670,"sessionId":"1776593755670-sdg3i","type":"session_start","data":{}}
+{"id":"1776593763845-lr0we","ts":1776593763845,"sessionId":"1776593755670-sdg3i","type":"session_end","data":{}}
+{"id":"1776593766614-kmkng","ts":1776593766614,"sessionId":"1776593766614-3im9o","type":"session_start","data":{}}
+{"id":"1776593779308-zaa63","ts":1776593779308,"sessionId":"1776593766614-3im9o","type":"session_end","data":{}}
+{"id":"1776593864520-yitrc","ts":1776593864520,"sessionId":"1776593864519-ip0m5","type":"session_start","data":{}}
+{"id":"1776593880412-xygqt","ts":1776593880412,"sessionId":"1776593864519-ip0m5","type":"session_end","data":{}}
+{"id":"1776593934358-lwfxo","ts":1776593934358,"sessionId":"1776593934358-jn8da","type":"session_start","data":{}}
+{"id":"1776593965291-xiocl","ts":1776593965291,"sessionId":"1776593934358-jn8da","type":"session_end","data":{}}
+{"id":"1776594248935-suw5t","ts":1776594248935,"sessionId":"1776594248935-41cah","type":"session_start","data":{}}
+{"id":"1776594267697-3n7a2","ts":1776594267697,"sessionId":"1776594248935-41cah","type":"session_end","data":{}}
+{"id":"1776594291910-n8hol","ts":1776594291910,"sessionId":"1776594291910-cvwfv","type":"session_start","data":{}}
+{"id":"1776594403908-x21o9","ts":1776594403908,"sessionId":"1776594291910-cvwfv","type":"session_end","data":{}}
+{"id":"1776596561079-k0nyb","ts":1776596561079,"sessionId":"1776596561079-igb6w","type":"session_start","data":{}}
+{"id":"1776596576263-d7m6l","ts":1776596576263,"sessionId":"1776596561079-igb6w","type":"session_end","data":{}}
+{"id":"1776596579251-69nf4","ts":1776596579251,"sessionId":"1776596579251-ygfej","type":"session_start","data":{}}
+{"id":"1776596591581-3uhv0","ts":1776596591581,"sessionId":"1776596579251-ygfej","type":"session_end","data":{}}
+{"id":"1776600806078-4jmy7","ts":1776600806078,"sessionId":"1776600806078-ckzek","type":"session_start","data":{}}
+{"id":"1776600866812-oel74","ts":1776600866813,"sessionId":"1776600806078-ckzek","type":"session_end","data":{}}
+{"id":"1776600888563-qde8t","ts":1776600888563,"sessionId":"1776600888563-jp8om","type":"session_start","data":{}}
+{"id":"1776600903676-ximrb","ts":1776600903676,"sessionId":"1776600888563-jp8om","type":"session_end","data":{}}
+{"id":"1776600904558-xe3cx","ts":1776600904558,"sessionId":"1776600904558-7opui","type":"session_start","data":{}}
+{"id":"1776601111809-um19p","ts":1776601111809,"sessionId":"1776600904558-7opui","type":"session_end","data":{}}
+{"id":"1776602309228-bic2e","ts":1776602309228,"sessionId":"1776602309228-eoruf","type":"session_start","data":{}}
+{"id":"1776602335818-ouy5w","ts":1776602335818,"sessionId":"1776602309228-eoruf","type":"session_end","data":{}}
+{"id":"1776602348132-ytg4l","ts":1776602348132,"sessionId":"1776602348132-62bap","type":"session_start","data":{}}
+{"id":"1776602476996-ymciz","ts":1776602476996,"sessionId":"1776602348132-62bap","type":"session_end","data":{}}
+{"id":"1776602482723-ufozc","ts":1776602482723,"sessionId":"1776602482723-em279","type":"session_start","data":{}}
+{"id":"1776602493194-tfjpy","ts":1776602493194,"sessionId":"1776602482723-em279","type":"session_end","data":{}}
+{"id":"1776602531239-6b5dy","ts":1776602531239,"sessionId":"1776602531238-dy3u1","type":"session_start","data":{}}
+{"id":"1776602546345-8u1j4","ts":1776602546345,"sessionId":"1776602531238-dy3u1","type":"session_end","data":{}}
+{"id":"1776603890637-d56qu","ts":1776603890637,"sessionId":"1776603890636-p1pwj","type":"session_start","data":{}}
+{"id":"1776603925061-isdr9","ts":1776603925061,"sessionId":"1776603890636-p1pwj","type":"session_end","data":{}}
+{"id":"1776604247289-7p84r","ts":1776604247289,"sessionId":"1776604247289-fxu8x","type":"session_start","data":{}}
+{"id":"1776604297925-vqm5k","ts":1776604297925,"sessionId":"1776604247289-fxu8x","type":"session_end","data":{}}
+{"id":"1776604490139-uq7bz","ts":1776604490139,"sessionId":"1776604490139-rxqwh","type":"session_start","data":{}}
+{"id":"1776604526758-giuld","ts":1776604526758,"sessionId":"1776604490139-rxqwh","type":"session_end","data":{}}
+{"id":"1776604581207-m17zs","ts":1776604581207,"sessionId":"1776604581207-9fxlq","type":"session_start","data":{}}
+{"id":"1776604631879-i8qah","ts":1776604631879,"sessionId":"1776604581207-9fxlq","type":"session_end","data":{}}
+{"id":"1776605134259-0b03g","ts":1776605134259,"sessionId":"1776605134259-y8895","type":"session_start","data":{}}
+{"id":"1776605245144-wcgsd","ts":1776605245144,"sessionId":"1776605134259-y8895","type":"session_end","data":{}}
+{"id":"1776605247096-bk2ua","ts":1776605247096,"sessionId":"1776605247096-pyjyx","type":"session_start","data":{}}
+{"id":"1776605271981-kc3dq","ts":1776605271981,"sessionId":"1776605247096-pyjyx","type":"session_end","data":{}}
+{"id":"1776605375971-33sip","ts":1776605375971,"sessionId":"1776605375971-q3sa7","type":"session_start","data":{}}
+{"id":"1776605389481-ad4gr","ts":1776605389481,"sessionId":"1776605375971-q3sa7","type":"session_end","data":{}}
+{"id":"1776605838948-d6pju","ts":1776605838948,"sessionId":"1776605838948-fttfy","type":"session_start","data":{}}
+{"id":"1776605845755-hc1io","ts":1776605845755,"sessionId":"1776605838948-fttfy","type":"session_end","data":{}}
+{"id":"1776605858155-rieja","ts":1776605858155,"sessionId":"1776605858155-dz8r5","type":"session_start","data":{}}
+{"id":"1776605949287-bkcd3","ts":1776605949287,"sessionId":"1776605858155-dz8r5","type":"session_end","data":{}}
+{"id":"1776605950955-phd7y","ts":1776605950955,"sessionId":"1776605950955-v7nko","type":"session_start","data":{}}
+{"id":"1776605960598-3yoft","ts":1776605960598,"sessionId":"1776605950955-v7nko","type":"session_end","data":{}}
+{"id":"1776606054904-pz6oq","ts":1776606054904,"sessionId":"1776606054904-4h64x","type":"session_start","data":{}}
+{"id":"1776606065312-92si2","ts":1776606065312,"sessionId":"1776606054904-4h64x","type":"session_end","data":{}}
+{"id":"1776606075414-kzshg","ts":1776606075414,"sessionId":"1776606075414-jc3ld","type":"session_start","data":{}}
+{"id":"1776606084180-hn1zz","ts":1776606084180,"sessionId":"1776606075414-jc3ld","type":"session_end","data":{}}
+{"id":"1776606086377-awmtw","ts":1776606086377,"sessionId":"1776606086377-nocfq","type":"session_start","data":{}}
+{"id":"1776606109384-gg1i6","ts":1776606109384,"sessionId":"1776606086377-nocfq","type":"session_end","data":{}}
+{"id":"1776606131457-8qfz6","ts":1776606131457,"sessionId":"1776606131457-0qkjf","type":"session_start","data":{}}
+{"id":"1776606166525-xgym6","ts":1776606166525,"sessionId":"1776606131457-0qkjf","type":"session_end","data":{}}
+{"id":"1776606177779-50hle","ts":1776606177779,"sessionId":"1776606177779-nwf6i","type":"session_start","data":{}}
+{"id":"1776606196778-d62wu","ts":1776606196778,"sessionId":"1776606177779-nwf6i","type":"session_end","data":{}}
+{"id":"1776606229965-qlso4","ts":1776606229965,"sessionId":"1776606229965-65qnb","type":"session_start","data":{}}
+{"id":"1776606239627-glqxt","ts":1776606239627,"sessionId":"1776606229965-65qnb","type":"session_end","data":{}}
+{"id":"1776606370216-53le6","ts":1776606370216,"sessionId":"1776606370216-dt6a1","type":"session_start","data":{}}
+{"id":"1776606379138-457j2","ts":1776606379138,"sessionId":"1776606370216-dt6a1","type":"session_end","data":{}}
+{"id":"1776606689812-jfbz6","ts":1776606689812,"sessionId":"1776606689812-x2k74","type":"session_start","data":{}}
+{"id":"1776606722112-whrm0","ts":1776606722112,"sessionId":"1776606689812-x2k74","type":"session_end","data":{}}
+{"id":"1776606725929-tubgi","ts":1776606725929,"sessionId":"1776606725929-ytg54","type":"session_start","data":{}}
+{"id":"1776606854876-e03uk","ts":1776606854876,"sessionId":"1776606725929-ytg54","type":"session_end","data":{}}
+{"id":"1776606855400-vbom8","ts":1776606855400,"sessionId":"1776606855400-goid2","type":"session_start","data":{}}
+{"id":"1776606917802-7iogs","ts":1776606917802,"sessionId":"1776606917802-9ma51","type":"session_start","data":{}}
+{"id":"1776607088560-57bdz","ts":1776607088560,"sessionId":"1776607088560-feoe1","type":"session_start","data":{}}
+{"id":"1776607094496-8gqdq","ts":1776607094496,"sessionId":"1776607088560-feoe1","type":"mood_observation","data":{"mood":"confused","intensity":"mild","notes":"Scanning environment, restless appearance."}}
+{"id":"1776607127891-2c0m7","ts":1776607127891,"sessionId":"1776607088560-feoe1","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"Confusion subsided, now calm and asking about weather."}}
+{"id":"1776607143377-wqvyb","ts":1776607143377,"sessionId":"1776607088560-feoe1","type":"caregiver_alert","data":{"severity":"low","reason":"Sam requested warm tea, no sugar."}}
+{"id":"1776607160984-2nnge","ts":1776607160984,"sessionId":"1776607088560-feoe1","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"Sam asked directly \"Who am I?\""}}
+{"id":"1776607161085-twiur","ts":1776607161085,"sessionId":"1776607088560-feoe1","type":"behavior_event","data":{"event_type":"general","notes":"Expressed significant confusion about identity."}}
+{"id":"1776607177889-fja2k","ts":1776607177889,"sessionId":"1776607088560-feoe1","type":"mood_observation","data":{"mood":"confused","intensity":"mild"}}
+{"id":"1776607204033-6vc77","ts":1776607204033,"sessionId":"1776607088560-feoe1","type":"behavior_event","data":{"event_type":"repetitive_question","notes":"Sam asked 'who am I?' then 'tell me more about myself' twice in quick succession."}}
+{"id":"1776607204090-cciuq","ts":1776607204090,"sessionId":"1776607088560-feoe1","type":"mood_observation","data":{"mood":"confused","intensity":"mild","notes":"Sam seems confused about his identity and keeps asking for reminders."}}
+{"id":"1776607222468-2sxai","ts":1776607222468,"sessionId":"1776607088560-feoe1","type":"behavior_event","data":{"event_type":"repetitive_question","notes":"Sam asked 'who am I?' and 'tell me more about myself' repeatedly."}}
+{"id":"1776607222528-q4dt6","ts":1776607222528,"sessionId":"1776607088560-feoe1","type":"mood_observation","data":{"mood":"distressed","intensity":"mild","notes":"Sam seems mildly distressed and is repeatedly asking for personal context and now to talk to someone."}}
+{"id":"1776607228136-4jcya","ts":1776607228136,"sessionId":"1776607088560-feoe1","type":"session_end","data":{}}
+{"id":"1776607432092-0edyt","ts":1776607432092,"sessionId":"1776607432092-z50c4","type":"session_start","data":{}}
+{"id":"1776607442380-vvq0a","ts":1776607442380,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild"}}
+{"id":"1776607450418-pudkx","ts":1776607450418,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"User seems calm and responsive."}}
+{"id":"1776607534686-792fv","ts":1776607534686,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"Fall alert appears to be false positive; user is calm in bed."}}
+{"id":"1776607666985-gzg6d","ts":1776607666985,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"User is calm and safe in bed despite false fall alert."}}
+{"id":"1776607894484-28rjb","ts":1776607894484,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"sad","intensity":"mild","notes":"User stated 'I'm feeling a little sad today'."}}
+{"id":"1776607915843-mdb3w","ts":1776607915843,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"confused","intensity":"mild","notes":"User stated 'I'm a little confused today'."}}
+{"id":"1776608147566-ee3i3","ts":1776608147566,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"False fall alert; user is calm and resting in bed."}}
+{"id":"1776608208027-iwhbj","ts":1776608208027,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"False positive fall alert; user is resting calmly in bed."}}
+{"id":"1776608240900-9l1ns","ts":1776608240900,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"User accepted reassurance and remains calm in bed."}}
+{"id":"1776608241651-2v2hi","ts":1776608241651,"sessionId":"1776607432092-z50c4","type":"caregiver_alert","data":{"severity":"low","reason":"Repeated confusion and multiple false positive fall alerts observed during session. User currently calm but noted sadness and confusion earlier."}}
+{"id":"1776608255591-mmy1u","ts":1776608255591,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"confused","intensity":"moderate","notes":"User explicitly asked 'where I'm at' and 'what's going on', indicating clear confusion and disorientation."}}
+{"id":"1776608266799-ztwa9","ts":1776608266799,"sessionId":"1776607432092-z50c4","type":"behavior_event","data":{"event_type":"repetitive_question","notes":"User repeatedly asking orienting questions ('where I'm at', 'how did I get here')."}}
+{"id":"1776608277207-td94x","ts":1776608277207,"sessionId":"1776607432092-z50c4","type":"behavior_event","data":{"event_type":"repetitive_question","notes":"User repeated 'how did I get here' multiple times."}}
+{"id":"1776608293934-78l1d","ts":1776608293934,"sessionId":"1776607432092-z50c4","type":"behavior_event","data":{"event_type":"lucid_moment","notes":"User paused repetitive questions to ask specifically about Billie Holiday preference, indicating a moment of lucid focus on personal interest."}}
+{"id":"1776608468497-k69rr","ts":1776608468497,"sessionId":"1776607432092-z50c4","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"Multiple false positive fall alerts during session; user remains calm and safe in bed."}}
+{"id":"1776608523599-cdeb9","ts":1776608523599,"sessionId":"1776608523599-8be21","type":"session_start","data":{}}
+{"id":"1776608529021-27s1l","ts":1776608529021,"sessionId":"1776608523599-8be21","type":"visual_observation","data":{"description":"Sam is walking into the room and smiling slightly.","emotion_hint":"calm"}}
+{"id":"1776608529087-w8rh2","ts":1776608529087,"sessionId":"1776608523599-8be21","type":"mood_observation","data":{"mood":"calm","intensity":"mild","notes":"Sam just entered the room."}}
+{"id":"1776608531462-oh8ue","ts":1776608531462,"sessionId":"1776608523599-8be21","type":"conversation_turn","data":{"role":"assistant","text":"Well hello Sam! It's good to see your face."}}
+{"id":"1776608536856-b5wqd","ts":1776608536856,"sessionId":"1776608523599-8be21","type":"caregiver_alert","data":{"severity":"high","reason":"Possible fall detected by motion sensor (confidence 77%)"}}
+{"id":"1776608541718-kc03d","ts":1776608541718,"sessionId":"1776608523599-8be21","type":"behavior_event","data":{"event_type":"fall_detected","notes":"Patient appears to have fallen — on floor"}}
+{"id":"1776608541778-nvm4i","ts":1776608541778,"sessionId":"1776608523599-8be21","type":"caregiver_alert","data":{"severity":"high","reason":"Patient has fallen — immediate response needed"}}
+{"id":"1776608545752-kzwxm","ts":1776608545752,"sessionId":"1776608523599-8be21","type":"conversation_turn","data":{"role":"assistant","text":"Oh no! Sam, are you alright? I'm right here, and help is coming quickly."}}

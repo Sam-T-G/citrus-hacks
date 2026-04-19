@@ -6,6 +6,11 @@ import { useSession } from '../session/SessionContext';
 import { ProfileEditModal } from './ProfileEditModal';
 import { CameraPreview } from '../ui/CameraPreview';
 import { LiveTranscript } from './LiveTranscript';
+import { SessionLog } from '../ui/SessionLog';
+import { logService } from '../services/LogService';
+import { notificationService } from '../services/NotificationService';
+import type { InAppNotif } from '../services/NotificationService';
+import type { SessionEvent, ConversationTurnData } from '../types';
 import type { VisionPipeline } from '../vision/VisionPipeline';
 
 type DesktopNav = 'today' | 'profile' | 'memories' | 'voices' | 'team';
@@ -19,9 +24,13 @@ function Sidebar({ nav, onNav, onAlert }: { nav: DesktopNav; onNav: (n: DesktopN
   const { store } = usePatientData();
   const pr = usePronouns();
   const { alerts } = useSession();
-  const highAlerts   = alerts.filter(a => a.severity === 'high').length;
-  const mediumAlerts = alerts.filter(a => a.severity === 'medium').length;
-  const alertCount   = highAlerts + mediumAlerts;
+  const [notifs, setNotifs] = useState<InAppNotif[]>([]);
+  useEffect(() => notificationService.subscribe(setNotifs), []);
+
+  const highAlerts    = alerts.filter(a => a.severity === 'high').length;
+  const mediumAlerts  = alerts.filter(a => a.severity === 'medium').length;
+  const alertCount    = highAlerts + mediumAlerts;
+  const pendingNotifs = notifs.filter(n => !n.acknowledged).length;
   type NavItem = { id: DesktopNav; label: string; hint: string };
   const items: NavItem[] = [
     { id: 'today',    label: 'Today',       hint: "What's happening now" },
@@ -68,6 +77,13 @@ function Sidebar({ nav, onNav, onAlert }: { nav: DesktopNav; onNav: (n: DesktopN
               </div>
               {it.id === 'today' && (
                 <span className={`d-live-badge${active ? ' active' : ''}`}>LIVE</span>
+              )}
+              {it.id === 'team' && pendingNotifs > 0 && (
+                <span style={{
+                  minWidth: 18, height: 18, borderRadius: 9, background: 'var(--rose-deep)',
+                  color: '#fff', fontSize: 10, fontWeight: 700, display: 'flex', alignItems: 'center',
+                  justifyContent: 'center', padding: '0 5px', fontFamily: 'var(--csans)',
+                }}>{pendingNotifs}</span>
               )}
             </button>
           );
@@ -125,7 +141,7 @@ const STATE_COLOR: Record<string, string> = {
 function DesktopToday({ onAlert }: { onAlert: () => void }) {
   const {
     engineState, transcript, liveUser, lastCmd, serialStatus,
-    sessionActive, engineRef, startSession, stopSession, connectSerial, errorMsg, clearError,
+    sessionActive, engineRef, startSession, stopSession, connectSerial, connectBridge, errorMsg, clearError,
   } = useSession();
   const { store, currentCaregiver } = usePatientData();
   const pr = usePronouns();
@@ -136,6 +152,14 @@ function DesktopToday({ onAlert }: { onAlert: () => void }) {
   useEffect(() => {
     setVisionPipeline(sessionActive ? (engineRef.current?.visionPipeline ?? null) : null);
   }, [sessionActive, engineRef]);
+
+  const [logEvents, setLogEvents] = useState<SessionEvent[]>([]);
+  useEffect(() => logService.subscribe(setLogEvents), []);
+
+  const lastMiraQuote = logEvents
+    .filter(e => e.type === 'conversation_turn' && (e.data as ConversationTurnData).role === 'assistant')
+    .slice(-1)[0];
+  const lastQuoteText = lastMiraQuote ? (lastMiraQuote.data as ConversationTurnData).text : '';
 
   const now = new Date();
   const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -199,11 +223,14 @@ function DesktopToday({ onAlert }: { onAlert: () => void }) {
                 End session
               </Pill>
           }
-          {serialStatus === 'disconnected' && (
+          {serialStatus === 'disconnected' && (<>
             <Pill tone="default" onClick={connectSerial} style={{ justifyContent: 'center' }}>
-              Connect Arduino
+              Connect Serial
             </Pill>
-          )}
+            <Pill tone="default" onClick={connectBridge} style={{ justifyContent: 'center' }}>
+              Connect Bridge
+            </Pill>
+          </>)}
         </div>
 
         {errorMsg && (
@@ -272,41 +299,77 @@ function DesktopToday({ onAlert }: { onAlert: () => void }) {
             active={sessionActive}
           />
         ) : (
-          /* Idle: show historical journal timeline */
+          /* Idle: show real session log timeline */
           <div style={{ flex: 1, overflowY: 'auto' }}>
-            <div className="c-eyebrow" style={{ marginBottom: 16 }}>Today's journal</div>
-            <div style={{ position: 'relative', paddingLeft: 12 }}>
-              <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 1, background: 'var(--hair)' }} />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {(store?.todayLog ?? []).map((e, i) => (
-                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '72px 1fr', gap: 20, alignItems: 'flex-start', position: 'relative' }}>
-                    <div style={{
-                      position: 'absolute', left: -16, top: 6, width: 9, height: 9,
-                      borderRadius: '50%', background: 'var(--paper)', border: '1.5px solid var(--ink-3)',
-                    }} />
-                    <div style={{ fontFamily: 'var(--cmono)', fontSize: 11, color: 'var(--ink-3)', letterSpacing: '0.02em', paddingTop: 4 }}>{e.t}</div>
-                    <div>
-                      <div className="c-eyebrow" style={{ marginBottom: 4 }}>
-                        {e.kind === 'greet' ? 'Said good morning' : e.kind === 'share' ? 'Listened' : e.kind === 'topic' ? 'Talked about' : e.kind === 'music' ? 'Played music' : 'Showed a memory'}
-                      </div>
-                      {(e.kind === 'greet' || e.kind === 'music') ? (
-                        <div style={{ fontFamily: 'var(--cmono)', fontSize: 13.5, color: 'var(--ink)', lineHeight: 1.5 }}>"{e.text}"</div>
-                      ) : (
-                        <div style={{ fontFamily: 'var(--serif)', fontSize: 18, color: 'var(--ink)', lineHeight: 1.35 }}>{e.text}</div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+            <div className="c-eyebrow" style={{ marginBottom: 16 }}>Today's session log</div>
+            {logEvents.length === 0 ? (
+              <div style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.6 }}>
+                No events logged yet. Start a session to begin.
               </div>
-            </div>
-            {(() => {
-              const note = store?.todayLog.filter(e => e.kind === 'share' || e.kind === 'topic' || e.kind === 'memory').slice(-1)[0]?.text;
-              return note ? (
-                <div style={{ marginTop: 36, paddingTop: 24, borderTop: '0.5px solid var(--hair)' }}>
-                  <OwlQuote size="lg">{note}</OwlQuote>
+            ) : (
+              <div style={{ position: 'relative', paddingLeft: 12 }}>
+                <div style={{ position: 'absolute', left: 0, top: 8, bottom: 8, width: 1, background: 'var(--hair)' }} />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                  {[...logEvents].reverse().map((e) => {
+                    const time = new Date(e.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    let label = '';
+                    let body: React.ReactNode = null;
+                    let dotColor = 'var(--ink-3)';
+
+                    if (e.type === 'conversation_turn') {
+                      const d = e.data as ConversationTurnData;
+                      label = d.role === 'assistant' ? 'Mira' : 'Patient';
+                      const snippet = d.text.length > 140 ? d.text.slice(0, 137) + '…' : d.text;
+                      body = <div style={{ fontStyle: 'italic', color: 'var(--ink)', fontSize: 14, lineHeight: 1.5 }}>"{snippet}"</div>;
+                    } else if (e.type === 'mood_observation') {
+                      label = 'Mood observed';
+                      dotColor = 'var(--sage-deep)';
+                      const d = e.data as { mood: string; intensity: string; notes?: string };
+                      body = <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>{d.mood} · {d.intensity}{d.notes ? ` — ${d.notes}` : ''}</div>;
+                    } else if (e.type === 'behavior_event') {
+                      label = 'Behaviour';
+                      dotColor = 'var(--clay-deep)';
+                      const d = e.data as { event_type: string; notes: string };
+                      body = <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>{d.event_type.replace(/_/g, ' ')}{d.notes ? ` — ${d.notes}` : ''}</div>;
+                    } else if (e.type === 'caregiver_alert') {
+                      label = 'Alert';
+                      dotColor = 'var(--rose-deep)';
+                      const d = e.data as { severity: string; reason: string };
+                      body = <div style={{ fontSize: 13, color: 'var(--rose-deep)', lineHeight: 1.5 }}>{d.severity.toUpperCase()} — {d.reason}</div>;
+                    } else if (e.type === 'visual_observation') {
+                      label = 'Visual check';
+                      dotColor = 'oklch(0.65 0.12 150)';
+                      const d = e.data as { emotion_hint: string; description: string };
+                      body = <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>{d.emotion_hint} — {d.description}</div>;
+                    } else if (e.type === 'session_start' || e.type === 'session_end') {
+                      label = e.type === 'session_start' ? 'Session started' : 'Session ended';
+                      body = null;
+                    } else {
+                      return null;
+                    }
+
+                    return (
+                      <div key={e.id} style={{ display: 'grid', gridTemplateColumns: '52px 1fr', gap: 16, alignItems: 'flex-start', position: 'relative' }}>
+                        <div style={{
+                          position: 'absolute', left: -16, top: 5, width: 8, height: 8,
+                          borderRadius: '50%', background: 'var(--paper)', border: `1.5px solid ${dotColor}`,
+                        }} />
+                        <div style={{ fontFamily: 'var(--cmono)', fontSize: 10, color: 'var(--ink-3)', letterSpacing: '0.02em', paddingTop: 3 }}>{time}</div>
+                        <div>
+                          <div className="c-eyebrow" style={{ marginBottom: 3, color: dotColor }}>{label}</div>
+                          {body}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ) : null;
-            })()}
+              </div>
+            )}
+            {lastQuoteText && (
+              <div style={{ marginTop: 36, paddingTop: 24, borderTop: '0.5px solid var(--hair)' }}>
+                <OwlQuote size="lg">{lastQuoteText.length > 200 ? lastQuoteText.slice(0, 197) + '…' : lastQuoteText}</OwlQuote>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -378,6 +441,9 @@ function DesktopToday({ onAlert }: { onAlert: () => void }) {
             </button>
           ))}
         </div>
+
+        <div className="c-eyebrow" style={{ marginTop: 28, marginBottom: 12 }}>Live care log</div>
+        <SessionLog />
       </div>
     </div>
   );
@@ -864,11 +930,118 @@ function CaregiverEditModal({ caregiver, saving, onSave, onDelete, onClose }: {
 }
 
 /* ── Team & settings ─────────────────────────────────────── */
+const SEVERITY_DOT: Record<string, string> = {
+  high:   'var(--rose-deep)',
+  medium: 'var(--clay-deep)',
+  low:    'var(--ink-3)',
+};
+
+const SEVERITY_BG: Record<string, string> = {
+  high:   'oklch(0.95 0.04 25)',
+  medium: 'oklch(0.96 0.04 55)',
+  low:    'var(--paper-2)',
+};
+
+function AlertFeed() {
+  const [notifs, setNotifs] = useState<InAppNotif[]>([]);
+  useEffect(() => notificationService.subscribe(setNotifs), []);
+
+  const pending = notifs.filter(n => !n.acknowledged);
+  const acked   = notifs.filter(n => n.acknowledged);
+
+  return (
+    <div>
+      {/* Pending alerts */}
+      {pending.length === 0 ? (
+        <div style={{
+          padding: '18px 20px', borderRadius: 12, background: 'oklch(0.96 0.02 150)',
+          border: '0.5px solid oklch(0.88 0.04 150)', display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10,
+        }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--sage-deep)', flexShrink: 0 }} />
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--sage-deep)' }}>All clear</div>
+            <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>No unacknowledged alerts at this time.</div>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
+          {[...pending].reverse().map(n => (
+            <div key={n.id} style={{
+              padding: '14px 16px', borderRadius: 12, background: SEVERITY_BG[n.severity],
+              border: `0.5px solid ${n.severity === 'high' ? 'oklch(0.85 0.08 25)' : 'var(--hair)'}`,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: SEVERITY_DOT[n.severity], flexShrink: 0, marginTop: 4 }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 3 }}>
+                    <span style={{ fontFamily: 'var(--cmono)', fontSize: 9.5, letterSpacing: '0.12em', textTransform: 'uppercase', color: SEVERITY_DOT[n.severity], fontWeight: 600 }}>
+                      {n.severity}
+                    </span>
+                    <span style={{ fontFamily: 'var(--cmono)', fontSize: 9.5, color: 'var(--ink-4)' }}>
+                      {new Date(n.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 13.5, color: 'var(--ink)', lineHeight: 1.4 }}>{n.reason}</div>
+                </div>
+                <button
+                  onClick={() => notificationService.acknowledge(n.id)}
+                  style={{
+                    flexShrink: 0, padding: '5px 10px', borderRadius: 7, fontSize: 11.5,
+                    background: 'var(--ink)', color: 'var(--paper)', border: 'none',
+                    cursor: 'pointer', fontFamily: 'var(--csans)', fontWeight: 500,
+                  }}
+                >
+                  Acknowledge
+                </button>
+              </div>
+            </div>
+          ))}
+          {pending.length > 1 && (
+            <button
+              onClick={() => notificationService.acknowledgeAll()}
+              style={{ alignSelf: 'flex-end', padding: '6px 12px', borderRadius: 8, fontSize: 12, background: 'none', border: '0.5px solid var(--hair)', color: 'var(--ink-3)', cursor: 'pointer', fontFamily: 'var(--csans)' }}
+            >
+              Acknowledge all ({pending.length})
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Acknowledged history */}
+      {acked.length > 0 && (
+        <div>
+          <div className="c-eyebrow" style={{ marginTop: 20, marginBottom: 10 }}>Acknowledged</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {[...acked].reverse().map((n, i) => (
+              <div key={n.id} style={{
+                display: 'grid', gridTemplateColumns: '8px 1fr auto', gap: 10, alignItems: 'flex-start',
+                padding: '10px 0', borderBottom: i < acked.length - 1 ? '0.5px solid var(--hair-2)' : 'none',
+                opacity: 0.55,
+              }}>
+                <span style={{ width: 6, height: 6, borderRadius: '50%', background: SEVERITY_DOT[n.severity], marginTop: 4, flexShrink: 0 }} />
+                <div style={{ fontSize: 12.5, color: 'var(--ink-2)', lineHeight: 1.4 }}>{n.reason}</div>
+                <span style={{ fontFamily: 'var(--cmono)', fontSize: 9.5, color: 'var(--ink-4)', whiteSpace: 'nowrap' }}>
+                  {new Date(n.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function DesktopTeam() {
   const { store, saving, updateStore } = usePatientData();
   const pr = usePronouns();
-  const [editTarget, setEditTarget] = useState<import('./PatientContext').Caregiver | null>(null); // null = new
+  const [notifs, setNotifs] = useState<InAppNotif[]>([]);
+  const [editTarget, setEditTarget] = useState<import('./PatientContext').Caregiver | null>(null);
   const [modalMode, setModalMode] = useState<'edit' | 'new' | null>(null);
+
+  useEffect(() => notificationService.subscribe(setNotifs), []);
+
+  const pendingCount = notifs.filter(n => !n.acknowledged).length;
 
   const openEdit = (c: import('./PatientContext').Caregiver) => { setEditTarget(c); setModalMode('edit'); };
   const openNew  = () => { setEditTarget(null); setModalMode('new'); };
@@ -900,12 +1073,29 @@ function DesktopTeam() {
           onClose={closeModal}
         />
       )}
+
       <div style={{ marginBottom: 28 }}>
         <div className="c-eyebrow" style={{ marginBottom: 6 }}>Care coordination</div>
-        <div style={{ fontFamily: 'var(--serif)', fontSize: 40, lineHeight: 1, color: 'var(--ink)', letterSpacing: '-0.01em', marginBottom: 8 }}>Team & settings.</div>
+        <div style={{ fontFamily: 'var(--serif)', fontSize: 40, lineHeight: 1, color: 'var(--ink)', letterSpacing: '-0.01em', marginBottom: 8 }}>Team & alerts.</div>
         <div style={{ display: 'flex', gap: 8 }}>
           <Pill tone="ink" onClick={openNew}>+ Add person</Pill>
         </div>
+      </div>
+
+      {/* ── Alert notification center ── */}
+      <div style={{ marginBottom: 36 }}>
+        <SectionHeader kicker="Notifications" action={
+          pendingCount > 0 ? (
+            <span style={{
+              minWidth: 20, height: 20, borderRadius: 10, background: 'var(--rose-deep)',
+              color: '#fff', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', padding: '0 6px', fontFamily: 'var(--csans)',
+            }}>{pendingCount}</span>
+          ) : null
+        }>
+          Alert feed
+        </SectionHeader>
+        <AlertFeed />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 32 }}>
