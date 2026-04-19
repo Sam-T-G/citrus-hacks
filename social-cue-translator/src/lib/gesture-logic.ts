@@ -41,12 +41,12 @@ export class GestureDetector {
     poseLandmarks: Landmark[] | null, 
     handLandmarks: Landmark[][] | null,
     blendshapes: { categoryName: string, score: number }[] = []
-  ): string | null {
-    const cue = this.rawProcess(faceLandmarks, poseLandmarks, handLandmarks, blendshapes);
-    if (cue) {
-      this.addToLog(cue);
+  ): { cue: string, score: number } | null {
+    const result = this.rawProcess(faceLandmarks, poseLandmarks, handLandmarks, blendshapes);
+    if (result) {
+      this.addToLog(result.cue, result.score);
     }
-    return cue;
+    return result;
   }
 
   private rawProcess(
@@ -54,7 +54,7 @@ export class GestureDetector {
     poseLandmarks: Landmark[] | null, 
     handLandmarks: Landmark[][] | null,
     blendshapes: { categoryName: string, score: number }[] = []
-  ): string | null {
+  ): { cue: string, score: number } | null {
     
     // Priority 1: High-Accuracy Face Blendshapes (MediaPipe native)
     if (blendshapes && blendshapes.length > 0) {
@@ -84,15 +84,15 @@ export class GestureDetector {
       const gazeDown = (getRawScore('eyeLookDownLeft') + getRawScore('eyeLookDownRight')) / 2;
 
       // Thresholds
-      if (blink > 0.6) return this.emit('blinking');
+      if (blink > 0.6) return this.emit('blinking', blink);
       
-      if (smile > 0.25) return this.emit('smiling');
-      if (frown > 0.15) return this.emit('frowning');
-      if (browsRaised > 0.2) return this.emit('brows_raised');
-      if (browsDown > 0.25) return this.emit('brows_furrowed');
+      if (smile > 0.25) return this.emit('smiling', smile);
+      if (frown > 0.15) return this.emit('frowning', frown);
+      if (browsRaised > 0.2) return this.emit('brows_raised', browsRaised);
+      if (browsDown > 0.25) return this.emit('brows_furrowed', browsDown);
       
-      if (gazeUp > 0.4) return this.emit('looking_up');
-      if (gazeDown > 0.4) return this.emit('looking_down');
+      if (gazeUp > 0.4) return this.emit('looking_up', gazeUp);
+      if (gazeDown > 0.4) return this.emit('looking_down', gazeDown);
     }
 
     // Priority 2: Hand Signals (Thumbs up/down)
@@ -107,8 +107,8 @@ export class GestureDetector {
         const isFist = Math.abs(indexTip.y - indexKnuckle.y) < 0.05;
 
         if (isFist) {
-          if (thumbTip.y < wrist.y - 0.1) return this.emit('thumbs_up');
-          if (thumbTip.y > wrist.y + 0.1) return this.emit('thumbs_down');
+          if (thumbTip.y < wrist.y - 0.1) return this.emit('thumbs_up', 1.0);
+          if (thumbTip.y > wrist.y + 0.1) return this.emit('thumbs_down', 1.0);
         }
       }
     }
@@ -126,14 +126,19 @@ export class GestureDetector {
       // Crossed Arms
       const distLR = Math.sqrt(Math.pow(lWrist.x - rElbow.x, 2) + Math.pow(lWrist.y - rElbow.y, 2));
       const distRL = Math.sqrt(Math.pow(rWrist.x - lElbow.x, 2) + Math.pow(rWrist.y - lElbow.y, 2));
-      if (distLR < 0.1 && distRL < 0.1) return this.emit('crossed_arms');
+      if (distLR < 0.1 && distRL < 0.1) return this.emit('crossed_arms', 0.9);
+
+      // Leaning Forward / Backward (Z-depth of shoulders relative to hips/nose)
+      const shoulderZ = (lShoulder.z + rShoulder.z) / 2;
+      if (shoulderZ < -0.4) return this.emit('leaning_forward', Math.abs(shoulderZ));
+      if (shoulderZ > 0.2) return this.emit('leaning_back', shoulderZ);
 
       // Facing Away (Shoulders swapped or too close)
-      if (rShoulder.x < lShoulder.x || Math.abs(rShoulder.x - lShoulder.x) < 0.05) return this.emit('facing_away');
+      if (rShoulder.x < lShoulder.x || Math.abs(rShoulder.x - lShoulder.x) < 0.05) return this.emit('facing_away', 1.0);
 
       // Slouching (Shoulders significantly lower than usual relative to nose)
       const shoulderAvgY = (lShoulder.y + rShoulder.y) / 2;
-      if (shoulderAvgY - nose.y > 0.25) return this.emit('slouching');
+      if (shoulderAvgY - nose.y > 0.25) return this.emit('slouching', 0.8);
     }
 
     // Priority 3: Facial Cues
@@ -154,8 +159,8 @@ export class GestureDetector {
       const browEyeDist = ((innerBrowL.y - eyeLTop.y) + (innerBrowR.y - eyeRTop.y)) / 2;
       const browRatio = browEyeDist / faceHeight;
 
-      if (browRatio > 0.02) return this.emit('brows_furrowed');
-      if (browRatio < -0.05) return this.emit('brows_raised');
+      if (browRatio > 0.02) return this.emit('brows_furrowed', Math.min(1.0, browRatio * 10));
+      if (browRatio < -0.05) return this.emit('brows_raised', Math.min(1.0, Math.abs(browRatio) * 5));
 
       // 2. Mouth: Smiling vs Frowning (using curvature/angle of corners)
       const mouthWidth = Math.abs(mouthRight.x - mouthLeft.x);
@@ -164,15 +169,15 @@ export class GestureDetector {
       
       const smileScore = (mouthVerticalCenter - cornerAvgY) / mouthWidth;
 
-      if (smileScore > 0.15) return this.emit('smiling');
-      if (smileScore < -0.05) return this.emit('frowning');
+      if (smileScore > 0.15) return this.emit('smiling', Math.min(1.0, smileScore * 4));
+      if (smileScore < -0.05) return this.emit('frowning', Math.min(1.0, Math.abs(smileScore) * 6));
 
       // 3. Eye Contact / Facing You (Using nose position and yaw proxy)
       const headWidth = Math.abs(faceLandmarks[454].x - faceLandmarks[234].x);
       const noseOffset = (nose.x - faceLandmarks[234].x) / headWidth;
       
-      if (noseOffset > 0.42 && noseOffset < 0.58) return this.emit('facing_you');
-      if (noseOffset < 0.35 || noseOffset > 0.65) return this.emit('looking_away');
+      if (noseOffset > 0.42 && noseOffset < 0.58) return this.emit('facing_you', 1.0);
+      if (noseOffset < 0.35 || noseOffset > 0.65) return this.emit('looking_away', 1.0);
       
       // 4. Nod/Shake History (remains the same but lower thresholds for sensitivity)
       this.headYHistory.push(nose.y);
@@ -183,11 +188,11 @@ export class GestureDetector {
       if (this.headYHistory.length === this.HISTORY_LIMIT) {
         const minY = Math.min(...this.headYHistory);
         const maxY = Math.max(...this.headYHistory);
-        if (maxY - minY > 0.035) return this.emit('nod_yes');
+        if (maxY - minY > 0.035) return this.emit('nod_yes', 0.9);
 
         const minX = Math.min(...this.headXHistory);
         const maxX = Math.max(...this.headXHistory);
-        if (maxX - minX > 0.045) return this.emit('shake_no');
+        if (maxX - minX > 0.045) return this.emit('shake_no', 0.9);
       }
     }
 
@@ -201,14 +206,14 @@ export class GestureDetector {
         if (this.wristXHistory.length === this.HISTORY_LIMIT) {
           const minX = Math.min(...this.wristXHistory);
           const maxX = Math.max(...this.wristXHistory);
-          if (maxX - minX > 0.08) return this.emit('wave_detected');
+          if (maxX - minX > 0.08) return this.emit('wave_detected', 0.82);
         }
       } else {
         this.wristXHistory = [];
       }
     }
 
-    return this.emit('person_detected');
+    return this.emit('person_detected', 0.5);
   }
 
   private addToLog(cue: string, confidence: number = 1.0) {
@@ -254,12 +259,12 @@ export class GestureDetector {
     return { state: topState, scores };
   }
 
-  private emit(event: string): string | null {
+  private emit(event: string, score: number = 1.0): { cue: string, score: number } | null {
     const now = Date.now();
     if (event !== this.currentEvent || (now - this.lastEventTime > this.COOLDOWN)) {
       this.lastEventTime = now;
       this.currentEvent = event;
-      return event;
+      return { cue: event, score };
     }
     return null;
   }
