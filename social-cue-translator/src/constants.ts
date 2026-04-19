@@ -38,6 +38,8 @@ export const CUE_NAMES: Record<string, string> = {
   'looking_up': 'Looking Up',
   'looking_down': 'Looking Down',
   'facing_you': 'Facing Camera',
+  'leaning_forward': 'Leaning Forward',
+  'leaning_back': 'Leaning Backward',
 };
 
 export type SocialState = 'friendly' | 'engaged' | 'concerned' | 'confused' | 'disagreeing' | 'disengaged' | 'neutral';
